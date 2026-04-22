@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:convert';
 import 'kamar_penghuni.dart';
 import 'propil_penghuni.dart';
+import 'tagihan_penghuni.dart';
 
 class HomePenghuni extends StatefulWidget {
   @override
