@@ -54,6 +54,27 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
     Navigator.pop(context);
   }
 
+  Widget boxItem(String title, String value) {
+    return Container(
+      margin: EdgeInsets.only(bottom: 10),
+      padding: EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade100,
+        borderRadius: BorderRadius.circular(12), // 🔥 SIKU LEMBUT
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(title),
+          Text(
+            value,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var data = widget.data;
@@ -78,34 +99,69 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
         backgroundColor: Colors.red,
       ),
       body: Padding(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.all(16),
         child: ListView(
           children: [
 
-            Text("Nama: $nama"),
-            Text("No WA: $phone"),
-            Text("Jatuh Tempo: $jatuhTempo"),
-            Text("Harga Sewa: Rp $totalTagihan"),
-
-            SizedBox(height: 20),
-
-            TextField(
-              controller: bayarController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: "Jumlah Bayar",
-                border: OutlineInputBorder(),
+            /// 🔥 CARD UTAMA
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16), // 🔥 LEBIH HALUS
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 6,
+                    offset: Offset(0, 3),
+                  )
+                ],
+              ),
+              child: Column(
+                children: [
+                  boxItem("Nama", nama),
+                  boxItem("No WA", phone),
+                  boxItem("Jatuh Tempo", jatuhTempo),
+                  boxItem("Harga Sewa", "Rp $totalTagihan"),
+                ],
               ),
             ),
 
             SizedBox(height: 20),
 
-            Text("Total Tagihan: Rp $totalTagihan"),
-            Text("Jumlah Bayar: Rp $jumlahBayar"),
-            Text("Sisa Tagihan: Rp $sisa"),
+            /// 🔥 INPUT BAYAR
+            TextField(
+              controller: bayarController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: "Jumlah Bayar",
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
 
             SizedBox(height: 20),
 
+            /// 🔥 RINGKASAN
+            Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.red.shade50,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                children: [
+                  boxItem("Total Tagihan", "Rp $totalTagihan"),
+                  boxItem("Jumlah Bayar", "Rp $jumlahBayar"),
+                  boxItem("Sisa Tagihan", "Rp $sisa"),
+                ],
+              ),
+            ),
+
+            SizedBox(height: 20),
+
+            /// 🔥 METODE
             DropdownButtonFormField<String>(
               value: metode,
               items: ["Transfer", "Cash", "E-Wallet"]
@@ -121,19 +177,28 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
               },
               decoration: InputDecoration(
                 labelText: "Metode Pembayaran",
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
 
             SizedBox(height: 30),
 
+            /// 🔥 BUTTON
             ElevatedButton(
               onPressed: bayarSekarang,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
-                padding: EdgeInsets.all(15),
+                padding: EdgeInsets.all(16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
-              child: Text("Bayar Sekarang"),
+              child: Text(
+                "Bayar Sekarang",
+                style: TextStyle(fontSize: 16),
+              ),
             )
           ],
         ),

@@ -47,7 +47,7 @@ class _HomePenghuniState extends State<HomePenghuni> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.book),
-            label: "Kamar",
+            label: "Daftar",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.notifications),

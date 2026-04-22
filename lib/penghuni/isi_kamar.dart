@@ -31,21 +31,34 @@ class _IsiKamarState extends State<IsiKamar> {
   }
 
   Future<void> ambilDataKamar() async {
-    var doc = await FirebaseFirestore.instance
-        .collection('kost')
-        .doc(widget.kosId)
-        .collection('kamar')
-        .doc(widget.kamarId)
-        .get();
+  /// 🔥 AMBIL DATA KAMAR
+  var kamarDoc = await FirebaseFirestore.instance
+      .collection('kost')
+      .doc(widget.kosId)
+      .collection('kamar')
+      .doc(widget.kamarId)
+      .get();
 
-    var data = doc.data() as Map<String, dynamic>;
+  var kamarData = kamarDoc.data() as Map<String, dynamic>?;
 
-    setState(() {
-      harga = data['harga'] ?? 0;
-      noKamar = data['No_Kamar'] ?? "-";
-      loading = false;
-    });
-  }
+  /// 🔥 AMBIL DATA KOST (UNTUK BACKUP HARGA)
+  var kostDoc = await FirebaseFirestore.instance
+      .collection('kost')
+      .doc(widget.kosId)
+      .get();
+
+  var kostData = kostDoc.data() as Map<String, dynamic>?;
+
+  setState(() {
+    noKamar = kamarData?['No_Kamar'] ?? "-";
+
+    /// 🔥 PRIORITAS HARGA
+    harga = kamarData?['harga'] ??
+            kostData?['harga'] ?? 0;
+
+    loading = false;
+  });
+}
 
   Future<void> simpan() async {
     final user = FirebaseAuth.instance.currentUser;
