@@ -54,6 +54,7 @@ class TagihanPenghuniPage extends StatelessWidget {
 
               String nama = item['penghuni_nama'] ?? "-";
 
+              /// 🔥 HANDLE TIMESTAMP AMAN
               DateTime tglMasuk;
               var raw = item['tanggal_masuk'];
 
