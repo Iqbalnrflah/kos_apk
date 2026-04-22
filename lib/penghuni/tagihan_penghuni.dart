@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'detail_tagihan.dart';
 
 class TagihanPenghuniPage extends StatelessWidget {
   @override
@@ -22,7 +23,6 @@ class TagihanPenghuniPage extends StatelessWidget {
       ),
 
       body: StreamBuilder<QuerySnapshot>(
-        /// 🔥 AMBIL SEMUA KAMAR (AMAN)
         stream: FirebaseFirestore.instance
             .collectionGroup('kamar')
             .snapshots(),
@@ -37,7 +37,6 @@ class TagihanPenghuniPage extends StatelessWidget {
             return Center(child: CircularProgressIndicator());
           }
 
-          /// 🔥 FILTER USER (ANTI HILANG)
           var data = snapshot.data!.docs.where((doc) {
             var item = doc.data() as Map<String, dynamic>;
             return item['penghuniId'] == uid;
@@ -55,9 +54,8 @@ class TagihanPenghuniPage extends StatelessWidget {
 
               String nama = item['penghuni_nama'] ?? "-";
 
-              /// 🔥 HANDLE TANGGAL (SUPER AMAN)
               DateTime tglMasuk;
-              final raw = item['tanggal_masuk'];
+              var raw = item['tanggal_masuk'];
 
               if (raw is Timestamp) {
                 tglMasuk = raw.toDate();
@@ -65,60 +63,65 @@ class TagihanPenghuniPage extends StatelessWidget {
                 tglMasuk = DateTime.now();
               }
 
-              /// 🔥 STATUS
               bool jatuhTempo = DateTime.now().day >= tglMasuk.day;
               String status = jatuhTempo ? "Jatuh Tempo" : "Mendatang";
 
-              /// 🔥 BULAN
-              int nextMonth = tglMasuk.month == 12 ? 1 : tglMasuk.month + 1;
-              int year = tglMasuk.month == 12 ? tglMasuk.year + 1 : tglMasuk.year;
+              String bulan =
+                  "${tglMasuk.month.toString().padLeft(2, '0')}/${tglMasuk.year}";
 
-              String bulan = "$nextMonth/$year";
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => DetailTagihanPage(data: item),
+                    ),
+                  );
+                },
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade800,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
 
-              return Container(
-                margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.red.shade800,
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            nama,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 6),
+                          Text(status,
+                              style: TextStyle(color: Colors.white70)),
+                        ],
+                      ),
 
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          nama,
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          bulan,
                           style: TextStyle(
-                            color: Colors.white,
+                            color: Colors.red,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 6),
-                        Text(
-                          status,
-                          style: TextStyle(color: Colors.white70),
-                        ),
-                      ],
-                    ),
-
-                    Container(
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        bulan,
-                        style: TextStyle(
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    )
-                  ],
+                      )
+                    ],
+                  ),
                 ),
               );
             },
