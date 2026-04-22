@@ -236,27 +236,55 @@ class _HomePenghuniState extends State<HomePenghuni> {
       ),
 
       /// 🔻 BOTTOM NAV
-      bottomNavigationBar: Container(
-        height: 60,
-        decoration: BoxDecoration(
-          color: Colors.red.shade800,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20),
-            topRight: Radius.circular(20),
-          ),
+      bottomNavigationBar: BottomNavigationBar(
+  backgroundColor: Colors.red.shade800,
+  selectedItemColor: Colors.white,
+  unselectedItemColor: Colors.white70,
+  type: BottomNavigationBarType.fixed,
+  currentIndex: 0,
+  onTap: (index) {
+    if (index == 0) {
+      // HOME (tidak pindah)
+    }
+
+    if (index == 1) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => TagihanPenghuniPage(),
         ),
-        child: Row(
-          mainAxisAlignment:
-              MainAxisAlignment.spaceAround,
-          children: [
-            Icon(Icons.home, color: Colors.white),
-            Icon(Icons.receipt_long, color: Colors.white),
-            Icon(Icons.book, color: Colors.white),
-            Icon(Icons.notifications,
-                color: Colors.white),
-          ],
-        ),
-      ),
+      );
+    }
+
+    if (index == 2) {
+      // KAMAR / BOOKING (kalau ada page-nya)
+      // Navigator.push(...)
+    }
+
+    if (index == 3) {
+      // NOTIFIKASI (kalau ada page-nya)
+      // Navigator.push(...)
+    }
+  },
+  items: const [
+    BottomNavigationBarItem(
+      icon: Icon(Icons.home),
+      label: "Home",
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.receipt_long),
+      label: "Tagihan",
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.book),
+      label: "Kamar",
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(Icons.notifications),
+      label: "Notif",
+    ),
+  ],
+),
     );
   }
 }

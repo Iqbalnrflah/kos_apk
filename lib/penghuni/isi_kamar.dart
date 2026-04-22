@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class IsiKamar extends StatefulWidget {
   final String kosId;
   final String kamarId;
 
-  const IsiKamar({super.key, required this.kosId, required this.kamarId});
+  const IsiKamar({
+    super.key,
+    required this.kosId,
+    required this.kamarId,
+  });
 
   @override
   State<IsiKamar> createState() => _IsiKamarState();
@@ -14,66 +19,132 @@ class IsiKamar extends StatefulWidget {
 class _IsiKamarState extends State<IsiKamar> {
   final nama = TextEditingController();
   final phone = TextEditingController();
-  final kamar = TextEditingController();
-  final tanggal = TextEditingController();
+
+  int harga = 0;
+  String noKamar = "-";
+  bool loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    ambilDataKamar();
+  }
+
+  Future<void> ambilDataKamar() async {
+    var doc = await FirebaseFirestore.instance
+        .collection('kost')
+        .doc(widget.kosId)
+        .collection('kamar')
+        .doc(widget.kamarId)
+        .get();
+
+    var data = doc.data() as Map<String, dynamic>;
+
+    setState(() {
+      harga = data['harga'] ?? 0;
+      noKamar = data['No_Kamar'] ?? "-";
+      loading = false;
+    });
+  }
 
   Future<void> simpan() async {
-  await FirebaseFirestore.instance
-      .collection('kost')
-      .doc(widget.kosId)
-      .collection('kamar') // ✅ MASUK KE KAMAR
-      .doc(widget.kamarId) // ✅ TARGET KAMAR
-      .update({
-    'penghuni_nama': nama.text,
-    'penghuni_phone': phone.text,
-    'tanggal_masuk': tanggal.text,
-    'status': 'terisi', // 🔥 INI YANG BUAT WARNA BERUBAH
-  });
+    final user = FirebaseAuth.instance.currentUser;
 
-  if (!mounted) return;
+    await FirebaseFirestore.instance
+        .collection('kost')
+        .doc(widget.kosId)
+        .collection('kamar')
+        .doc(widget.kamarId)
+        .set({
+      'penghuni_nama': nama.text,
+      'penghuni_phone': phone.text,
 
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(content: Text("Berhasil mengisi kamar")),
-  );
+      /// 🔥 AUTO
+      'penghuniId': user!.uid,
+      'kosId': widget.kosId,
+      'status': 'terisi',
 
-  Navigator.pop(context);
-}
+      /// 🔥 AUTO DARI DATA KAMAR
+      'No_Kamar': noKamar,
+      'harga': harga,
+
+      /// 🔥 AUTO TANGGAL
+      'tanggal_masuk': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Berhasil menyimpan")),
+    );
+
+    Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
+    if (loading) {
+      return Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Data Penghuni")),
+      appBar: AppBar(title: Text("Isi Kamar")),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(20),
         child: Column(
           children: [
-            buildInput("Nama Penghuni", nama),
-            buildInput("Nomor WhatsApp", phone),
-            buildInput("Nomor Kamar", kamar),
-            buildInput("Tanggal Masuk", tanggal),
+            /// 🔥 NO KAMAR
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                "No Kamar: $noKamar",
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
 
-            const SizedBox(height: 20),
+            SizedBox(height: 10),
+
+            /// 🔥 HARGA (READ ONLY)
+            Container(
+              padding: EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text("Harga"),
+                  Text(
+                    "Rp $harga",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(height: 20),
+
+            TextField(
+              controller: nama,
+              decoration: InputDecoration(labelText: "Nama"),
+            ),
+
+            TextField(
+              controller: phone,
+              decoration: InputDecoration(labelText: "No HP"),
+            ),
+
+            SizedBox(height: 20),
 
             ElevatedButton(
               onPressed: simpan,
-              child: const Text("Selesai"),
+              child: Text("Simpan"),
             )
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildInput(String label, TextEditingController controller) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 15),
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          labelText: label,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
         ),
       ),
     );
