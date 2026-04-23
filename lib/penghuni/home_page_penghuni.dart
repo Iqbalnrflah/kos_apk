@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'home_content.dart';
 import 'tagihan_penghuni.dart';
+import 'daftar_penghuni.dart';
 
 class HomePenghuni extends StatefulWidget {
   @override
@@ -13,7 +14,7 @@ class _HomePenghuniState extends State<HomePenghuni> {
   final List<Widget> pages = [
     HomeContent(),
     TagihanPenghuniPage(),
-    Center(child: Text("Kamar")),
+    DaftarPenghuniPage(),
     Center(child: Text("Notif")),
   ];
 

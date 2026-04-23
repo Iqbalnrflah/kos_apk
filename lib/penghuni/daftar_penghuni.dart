@@ -6,131 +6,77 @@ class DaftarPenghuniPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Daftar Penghuni"),
+        title: Text("Daftar Pembayaran"),
         backgroundColor: Colors.red,
       ),
 
       body: StreamBuilder<QuerySnapshot>(
-        stream: FirebaseFirestore.instance
-            .collectionGroup('kamar')
-            .snapshots(),
+  stream: FirebaseFirestore.instance
+      .collection('pembayaran')
+      .snapshots(),
+  builder: (context, snapshot) {
 
-        builder: (context, snapshot) {
+    if (snapshot.hasError) {
+      return Center(child: Text("Error: ${snapshot.error}"));
+    }
 
-          if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          }
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return Center(child: CircularProgressIndicator());
+    }
 
-          if (!snapshot.hasData) {
-            return Center(child: CircularProgressIndicator());
-          }
+    final docs = snapshot.data?.docs ?? [];
 
-          var data = snapshot.data!.docs;
+    if (docs.isEmpty) {
+      return Center(child: Text("Belum ada pembayaran"));
+    }
 
-          if (data.isEmpty) {
-            return Center(child: Text("Belum ada penghuni"));
-          }
+    return ListView.builder(
+      itemCount: docs.length,
+      itemBuilder: (context, index) {
 
-          return ListView.builder(
-            itemCount: data.length,
-            itemBuilder: (context, index) {
+        final item = docs[index].data() as Map<String, dynamic>;
 
-              var item = data[index].data() as Map<String, dynamic>;
+        final nama = (item['penghuni_nama'] ?? "-").toString();
+        final phone = (item['penghuni_phone'] ?? "-").toString();
+        final status = (item['status'] ?? "belum lunas").toString();
 
-              String nama = item['penghuni_nama'] ?? "-";
-              String kamar = item['No_Kamar'] ?? "-";
-              String status = item['status_bayar'] ?? "belum";
+        final raw = item['tanggal_bayar'];
 
-              /// 🔥 HANDLE WAKTU
-              DateTime waktu;
-              var raw = item['tanggal_masuk'];
+        final tgl = raw is Timestamp
+            ? raw.toDate()
+            : DateTime.now();
 
-              if (raw is Timestamp) {
-                waktu = raw.toDate();
-              } else {
-                waktu = DateTime.now();
-              }
+        final waktu =
+            "${tgl.day}/${tgl.month} ${tgl.hour.toString().padLeft(2, '0')}:${tgl.minute.toString().padLeft(2, '0')}";
 
-              String jam =
-                  "${waktu.hour.toString().padLeft(2, '0')}:${waktu.minute.toString().padLeft(2, '0')}";
-
-              return Container(
-                margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                padding: EdgeInsets.all(16),
+        return ListTile(
+          title: Text(nama),
+          subtitle: Text(phone),
+          trailing: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(waktu),
+              SizedBox(height: 5),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(15),
-                  boxShadow: [
-                    BoxShadow(
-                      blurRadius: 5,
-                      color: Colors.black12,
-                    )
-                  ],
+                  color: status == "lunas"
+                      ? Colors.green
+                      : Colors.orange,
+                  borderRadius: BorderRadius.circular(12),
                 ),
-
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-
-                    /// 🔹 KIRI (NAMA + KAMAR)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          nama,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                        SizedBox(height: 4),
-                        Text("Kamar: $kamar"),
-                      ],
-                    ),
-
-                    /// 🔹 KANAN (WAKTU + STATUS)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-
-                        /// ⏰ WAKTU
-                        Text(
-                          jam,
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: 12,
-                          ),
-                        ),
-
-                        SizedBox(height: 10),
-
-                        /// 🔥 STATUS BADGE
-                        Container(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: status == "lunas"
-                                ? Colors.green
-                                : Colors.red,
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            status == "lunas" ? "Lunas" : "Belum Lunas",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                            ),
-                          ),
-                        )
-                      ],
-                    )
-                  ],
+                child: Text(
+                  status,
+                  style: TextStyle(color: Colors.white),
                 ),
-              );
-            },
-          );
-        },
-      ),
+              )
+            ],
+          ),
+        );
+      },
+    );
+  },
+),
     );
   }
 }

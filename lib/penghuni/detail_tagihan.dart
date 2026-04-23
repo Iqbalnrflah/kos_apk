@@ -4,7 +4,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class DetailTagihanPage extends StatefulWidget {
   final Map<String, dynamic> data;
 
-  const DetailTagihanPage({super.key, required this.data});
+  final String kosId;
+  final String kamarId;
+
+  const DetailTagihanPage({
+    super.key,
+    required this.data,
+    required this.kosId,
+    required this.kamarId,
+  });
 
   @override
   State<DetailTagihanPage> createState() => _DetailTagihanPageState();
@@ -40,9 +48,12 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
     await FirebaseFirestore.instance.collection('pembayaran').add({
       'penghuni_nama': widget.data['penghuni_nama'],
       'penghuni_phone': widget.data['penghuni_phone'],
+      'kosId': widget.kosId,
+      'kamarId': widget.kamarId,
       'jumlah_bayar': jumlahBayar,
       'total_tagihan': totalTagihan,
       'sisa_tagihan': sisa,
+      'status': (sisa <= 0) ? 'lunas' : 'belum lunas',
       'metode': metode,
       'tanggal_bayar': FieldValue.serverTimestamp(),
     });
@@ -60,7 +71,7 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
       padding: EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(12), // 🔥 SIKU LEMBUT
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -82,14 +93,9 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
     String nama = data['penghuni_nama'] ?? "-";
     String phone = data['penghuni_phone'] ?? "-";
 
-    DateTime tgl;
-    var raw = data['tanggal_masuk'];
-
-    if (raw is Timestamp) {
-      tgl = raw.toDate();
-    } else {
-      tgl = DateTime.now();
-    }
+    DateTime tgl = (data['tanggal_masuk'] is Timestamp)
+        ? (data['tanggal_masuk'] as Timestamp).toDate()
+        : DateTime.now();
 
     String jatuhTempo = "${tgl.day}/${tgl.month}/${tgl.year}";
 
@@ -103,12 +109,11 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
         child: ListView(
           children: [
 
-            /// 🔥 CARD UTAMA
             Container(
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(16), // 🔥 LEBIH HALUS
+                borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black12,
@@ -129,7 +134,6 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
 
             SizedBox(height: 20),
 
-            /// 🔥 INPUT BAYAR
             TextField(
               controller: bayarController,
               keyboardType: TextInputType.number,
@@ -143,7 +147,6 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
 
             SizedBox(height: 20),
 
-            /// 🔥 RINGKASAN
             Container(
               padding: EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -161,7 +164,6 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
 
             SizedBox(height: 20),
 
-            /// 🔥 METODE
             DropdownButtonFormField<String>(
               value: metode,
               items: ["Transfer", "Cash", "E-Wallet"]
@@ -185,7 +187,6 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
 
             SizedBox(height: 30),
 
-            /// 🔥 BUTTON
             ElevatedButton(
               onPressed: bayarSekarang,
               style: ElevatedButton.styleFrom(
