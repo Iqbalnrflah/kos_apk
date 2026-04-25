@@ -5,51 +5,86 @@ import 'detail_kos_page.dart';
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
+    return SafeArea(
+      child: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance.collection('kost').snapshots(),
         builder: (context, snapshot) {
 
-          // 🔄 loading
+          // loading
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
           }
 
-          // ❌ error
+          // error
           if (snapshot.hasError) {
             return Center(child: Text("Error: ${snapshot.error}"));
           }
 
-          // 📭 kosong
+          // kosong
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
             return Center(child: Text("Belum ada data kos"));
           }
 
-          // 📦 ambil data
           var data = snapshot.data!.docs;
 
           return ListView.builder(
-            padding: EdgeInsets.all(16),
             itemCount: data.length,
             itemBuilder: (context, index) {
-              var item = data[index];
+              var item = data[index].data() as Map<String, dynamic>;
 
-              return Card(
-                margin: EdgeInsets.only(bottom: 15),
-                child: ListTile(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => DetailKosPage(kosId: item.id),
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => DetailKosPage(kosId: data[index].id),
+                    ),
+                  );
+                },
+
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.red.shade800,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+
+                      Text(
+                        item['nama_kos'] ?? "Tanpa Nama",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    );
-                  },
-                  title: Text(item['nama_kos']),
+
+                      SizedBox(height: 6),
+
+                      Text(
+                        item['pemilik'] ?? "Tanpa Pemilik",
+                        style: TextStyle(color: Colors.white),
+                      ),
+
+                      SizedBox(height: 4),
+
+                      Text(
+                        item['alamat'] ?? "-",
+                        style: TextStyle(
+                          color: Colors.white70,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
           );
         },
-      );
+      ),
+    );
   }
 }

@@ -21,10 +21,31 @@ class _MainPageState extends State<MainPage> {
     RiwayatPage(),
   ];
 
+  void changeTab(int i) {
+    setState(() {
+      index = i;
+    });
+  }
+
+  /// 🔥 ICON BESAR
+  Widget navItem(IconData icon, int i) {
+    bool active = index == i;
+
+    return GestureDetector(
+      onTap: () => changeTab(i),
+      child: Icon(
+        icon,
+        size: 30, // 🔥 BESAR (ini yang kamu mau)
+        color: active ? Colors.white : Colors.white70,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         actions: [
           IconButton(
             icon: Icon(Icons.person),
@@ -40,7 +61,7 @@ class _MainPageState extends State<MainPage> {
 
       body: pages[index],
 
-      // 🔥 TOMBOL TENGAH
+      /// 🔥 FAB NORMAL (jangan mini)
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
@@ -48,48 +69,41 @@ class _MainPageState extends State<MainPage> {
             MaterialPageRoute(builder: (_) => TambahKamarPage()),
           );
         },
-        backgroundColor: const Color.fromARGB(255, 253, 66, 52),
-        child: Icon(Icons.add),
+        backgroundColor: Colors.red.shade900,
+        elevation: 6,
+        child: Icon(Icons.add, size: 30),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
-      // 🔻 NAVBAR BAWAH
-      bottomNavigationBar: BottomAppBar(
-        shape: CircularNotchedRectangle(),
-        notchMargin: 8,
-        child: Container(
-          height: 60,
-          decoration: BoxDecoration(
-            border: Border(
-              top: BorderSide(color: Colors.red, width: 3),
-            ),
+      /// 🔥 NAVBAR MINI TAPI ICON BESAR
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.red.shade800,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(18),
+            topRight: Radius.circular(18),
           ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
+        ),
+        child: BottomAppBar(
+          color: Colors.transparent,
+          elevation: 0,
+          shape: CircularNotchedRectangle(),
+          notchMargin: 6,
+          child: SizedBox(
+            height: 60,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
 
-              IconButton(
-                icon: Icon(Icons.home),
-                onPressed: () => setState(() => index = 0),
-              ),
+                navItem(Icons.home, 0),
+                navItem(Icons.receipt_long, 1),
 
-              IconButton(
-                icon: Icon(Icons.payment),
-                onPressed: () => setState(() => index = 1),
-              ),
+                SizedBox(width: 10),
 
-              SizedBox(width: 40), // ruang FAB
-
-              IconButton(
-                icon: Icon(Icons.notifications),
-                onPressed: () => setState(() => index = 2),
-              ),
-
-              IconButton(
-                icon: Icon(Icons.history),
-                onPressed: () => setState(() => index = 3),
-              ),
-            ],
+                navItem(Icons.notifications, 2),
+                navItem(Icons.history, 3),
+              ],
+            ),
           ),
         ),
       ),
