@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
+import 'midtrans_webview.dart';
 
 class DetailTagihanPage extends StatefulWidget {
   final Map<String, dynamic> data;
@@ -43,8 +47,33 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
   }
 
   Future<void> bayarSekarang() async {
-    if (jumlahBayar <= 0) return;
+  if (jumlahBayar <= 0) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Masukkan jumlah bayar")),
+    );
+    return;
+  }
 
+  try {
+    /// 🔥 REQUEST KE BACKEND NODE
+    final response = await http.post(
+      Uri.parse("http://10.0.2.2:3000/bayar"), // emulator
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "nama": widget.data['penghuni_nama'] ?? "User",
+        "amount": jumlahBayar,
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception("Gagal koneksi server");
+    }
+
+    final responsesData = jsonDecode(response.body);
+
+    String url = responsesData['url'];
+
+    /// 🔥 SIMPAN KE FIREBASE (PENDING)
     await FirebaseFirestore.instance.collection('pembayaran').add({
       'penghuni_nama': widget.data['penghuni_nama'],
       'penghuni_phone': widget.data['penghuni_phone'],
@@ -53,17 +82,33 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
       'jumlah_bayar': jumlahBayar,
       'total_tagihan': totalTagihan,
       'sisa_tagihan': sisa,
-      'status': (sisa <= 0) ? 'lunas' : 'belum lunas',
+      'status': 'pending', // 🔥 WAJIB pending dulu
       'metode': metode,
       'tanggal_bayar': FieldValue.serverTimestamp(),
     });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Pembayaran berhasil")),
-    );
+    /// 🔥 BUKA MIDTRANS
+    final bool? result = await Navigator.push<bool>(
+  context,
+  MaterialPageRoute(
+    builder: (_) => MidtransWebView(url: url),
+  ),
+);
 
-    Navigator.pop(context);
+if (result == true) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text("Pembayaran selesai")),
+  );
+}
+
+  } catch (e) {
+    print("ERROR: $e");
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Gagal bayar, cek server")),
+    );
   }
+}
 
   Widget boxItem(String title, String value) {
     return Container(
