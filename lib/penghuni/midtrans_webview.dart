@@ -26,9 +26,11 @@ class _MidtransWebViewState extends State<MidtransWebView> {
             /// 🔥 DETEKSI SELESAI BAYAR
             if (request.url.contains("finish") ||
                 request.url.contains("success") ||
-                request.url.contains("settlement")) {
-
-              Navigator.pop(context, true); // ✅ balik ke halaman sebelumnya
+                request.url.contains("settlement") ||
+                request.url.contains("capture")) {
+                  if (mounted) {
+                    Navigator.pop(context, true);
+                  }
               return NavigationDecision.prevent;
             }
 

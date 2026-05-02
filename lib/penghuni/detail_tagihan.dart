@@ -46,18 +46,18 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
     });
   }
 
-  Future<void> bayarSekarang() async {
+Future<void> bayarSekarang() async {
   if (jumlahBayar <= 0) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Masukkan jumlah bayar")),
+      const SnackBar(content: Text("Masukkan jumlah bayar")),
     );
     return;
   }
 
   try {
-    /// 🔥 REQUEST KE BACKEND NODE
+    /// 🔥 PAKAI DOMAIN (BUKAN LOCALHOST)
     final response = await http.post(
-      Uri.parse("http://10.0.2.2:3000/bayar"), // emulator
+      Uri.parse("https://kosback-production.up.railway.app/bayar"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({
         "nama": widget.data['penghuni_nama'] ?? "User",
@@ -66,15 +66,16 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
     );
 
     if (response.statusCode != 200) {
-      throw Exception("Gagal koneksi server");
+      throw Exception("Server error");
     }
 
     final responsesData = jsonDecode(response.body);
-
     String url = responsesData['url'];
 
-    /// 🔥 SIMPAN KE FIREBASE (PENDING)
-    await FirebaseFirestore.instance.collection('pembayaran').add({
+    /// 🔥 SIMPAN FIREBASE (PENDING)
+    final docRef = await FirebaseFirestore.instance
+        .collection('pembayaran')
+        .add({
       'penghuni_nama': widget.data['penghuni_nama'],
       'penghuni_phone': widget.data['penghuni_phone'],
       'kosId': widget.kosId,
@@ -82,30 +83,33 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
       'jumlah_bayar': jumlahBayar,
       'total_tagihan': totalTagihan,
       'sisa_tagihan': sisa,
-      'status': 'pending', // 🔥 WAJIB pending dulu
+      'status': 'pending',
       'metode': metode,
       'tanggal_bayar': FieldValue.serverTimestamp(),
     });
 
     /// 🔥 BUKA MIDTRANS
-    final bool? result = await Navigator.push<bool>(
-  context,
-  MaterialPageRoute(
-    builder: (_) => MidtransWebView(url: url),
-  ),
-);
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => MidtransWebView(url: url),
+      ),
+    );
 
-if (result == true) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text("Pembayaran selesai")),
-  );
-}
+    /// 🔥 UPDATE STATUS (Sementara dari WebView)
+    if (result == true) {
+      await docRef.update({'status': 'success'});
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Pembayaran berhasil")),
+      );
+    }
 
   } catch (e) {
     print("ERROR: $e");
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Gagal bayar, cek server")),
+      const SnackBar(content: Text("Gagal bayar, cek server")),
     );
   }
 }
