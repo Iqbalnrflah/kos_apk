@@ -22,20 +22,22 @@ class _MidtransWebViewState extends State<MidtransWebView> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onNavigationRequest: (request) {
+  print("URL: ${request.url}");
 
-            /// 🔥 DETEKSI SELESAI BAYAR
-            if (request.url.contains("finish") ||
-                request.url.contains("success") ||
-                request.url.contains("settlement") ||
-                request.url.contains("capture")) {
-                  if (mounted) {
-                    Navigator.pop(context, true);
-                  }
-              return NavigationDecision.prevent;
-            }
+  // 🔥 DETEKSI BALIK DARI MIDTRANS
+  if (request.url.contains("myapp://success")) {
+    Navigator.pop(context, true);
+    return NavigationDecision.prevent;
+  }
 
-            return NavigationDecision.navigate;
-          },
+  // fallback safety
+  if (request.url.contains("finish")) {
+    Navigator.pop(context, true);
+    return NavigationDecision.prevent;
+  }
+
+  return NavigationDecision.navigate;
+},
         ),
       )
       ..loadRequest(Uri.parse(widget.url));

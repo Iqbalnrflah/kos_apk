@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:url_launcher/url_launcher.dart';
 import 'midtrans_webview.dart';
 
 class DetailTagihanPage extends StatefulWidget {
   final Map<String, dynamic> data;
-
   final String kosId;
   final String kamarId;
 
@@ -23,101 +21,88 @@ class DetailTagihanPage extends StatefulWidget {
 }
 
 class _DetailTagihanPageState extends State<DetailTagihanPage> {
-  final bayarController = TextEditingController();
-
   int totalTagihan = 0;
-  int jumlahBayar = 0;
-  int sisa = 0;
-
   String metode = "Transfer";
 
   @override
   void initState() {
     super.initState();
-
     totalTagihan = widget.data['harga'] ?? 0;
-    sisa = totalTagihan;
-
-    bayarController.addListener(() {
-      setState(() {
-        jumlahBayar = int.tryParse(bayarController.text) ?? 0;
-        sisa = totalTagihan - jumlahBayar;
-      });
-    });
   }
 
-Future<void> bayarSekarang() async {
-  if (jumlahBayar <= 0) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Masukkan jumlah bayar")),
-    );
-    return;
-  }
-
-  try {
-    /// 🔥 PAKAI DOMAIN (BUKAN LOCALHOST)
-    final response = await http.post(
-      Uri.parse("https://kosback-production.up.railway.app/bayar"),
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({
-        "nama": widget.data['penghuni_nama'] ?? "User",
-        "amount": jumlahBayar,
-      }),
-    );
-
-    if (response.statusCode != 200) {
-      throw Exception("Server error");
+  Future<void> bayarSekarang() async {
+    if (totalTagihan <= 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Tagihan tidak valid")),
+      );
+      return;
     }
 
-    final responsesData = jsonDecode(response.body);
-    String url = responsesData['url'];
+    try {
+      final response = await http.post(
+        Uri.parse("https://kosback-production.up.railway.app/bayar"),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "nama": widget.data['penghuni_nama'] ?? "User",
+          "amount": totalTagihan,
+        }),
+      );
 
-    /// 🔥 SIMPAN FIREBASE (PENDING)
-    final docRef = await FirebaseFirestore.instance
-        .collection('pembayaran')
-        .add({
-      'penghuni_nama': widget.data['penghuni_nama'],
-      'penghuni_phone': widget.data['penghuni_phone'],
-      'kosId': widget.kosId,
-      'kamarId': widget.kamarId,
-      'jumlah_bayar': jumlahBayar,
-      'total_tagihan': totalTagihan,
-      'sisa_tagihan': sisa,
-      'status': 'pending',
-      'metode': metode,
-      'tanggal_bayar': FieldValue.serverTimestamp(),
-    });
+      print("STATUS: ${response.statusCode}");
+      print("BODY: ${response.body}");
+      print("URL HIT: https://kosback-production.up.railway.app/bayar");
 
-    /// 🔥 BUKA MIDTRANS
-    final result = await Navigator.push<bool>(
-      context,
-      MaterialPageRoute(
-        builder: (_) => MidtransWebView(url: url),
-      ),
-    );
+      if (response.statusCode != 200) {
+        throw Exception(response.body);
+      }
 
-    /// 🔥 UPDATE STATUS (Sementara dari WebView)
-    if (result == true) {
-      await docRef.update({'status': 'success'});
+      final data = jsonDecode(response.body);
+      String url = data['url'];
+
+      final result = await Navigator.push<bool>(
+        context,
+        MaterialPageRoute(
+          builder: (_) => MidtransWebView(url: url),
+        ),
+      );
+
+      /// ✅ SIMPAN KE FIREBASE JIKA SUKSES
+      if (result == true) {
+        await FirebaseFirestore.instance.collection('pembayaran').add({
+          'penghuni_nama': widget.data['penghuni_nama'],
+          'penghuni_phone': widget.data['penghuni_phone'],
+          'kosId': widget.kosId,
+          'kamarId': widget.kamarId,
+          'jumlah_bayar': totalTagihan,
+          'total_tagihan': totalTagihan,
+          'sisa_tagihan': 0,
+          'status': 'berhasil',
+          'metode': metode,
+          'tanggal_bayar': FieldValue.serverTimestamp(),
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Pembayaran berhasil")),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Pembayaran dibatalkan")),
+        );
+      }
+
+    } catch (e) {
+      print("ERROR: $e");
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Pembayaran berhasil")),
+        SnackBar(content: Text("Error: $e")),
       );
     }
-
-  } catch (e) {
-    print("ERROR: $e");
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Gagal bayar, cek server")),
-    );
   }
-}
 
   Widget boxItem(String title, String value) {
     return Container(
-      margin: EdgeInsets.only(bottom: 10),
-      padding: EdgeInsets.all(14),
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: Colors.grey.shade100,
         borderRadius: BorderRadius.circular(12),
@@ -126,10 +111,7 @@ Future<void> bayarSekarang() async {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(title),
-          Text(
-            value,
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
+          Text(value, style: const TextStyle(fontWeight: FontWeight.bold)),
         ],
       ),
     );
@@ -150,25 +132,22 @@ Future<void> bayarSekarang() async {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Detail Tagihan"),
+        title: const Text("Detail Tagihan"),
         backgroundColor: Colors.red,
       ),
       body: Padding(
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
 
+            /// INFO
             Container(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 6,
-                    offset: Offset(0, 3),
-                  )
+                boxShadow: const [
+                  BoxShadow(color: Colors.black12, blurRadius: 6)
                 ],
               ),
               child: Column(
@@ -181,11 +160,14 @@ Future<void> bayarSekarang() async {
               ),
             ),
 
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
+            /// JUMLAH BAYAR (FIXED)
             TextField(
-              controller: bayarController,
-              keyboardType: TextInputType.number,
+              enabled: false,
+              controller: TextEditingController(
+                text: totalTagihan.toString(),
+              ),
               decoration: InputDecoration(
                 labelText: "Jumlah Bayar",
                 border: OutlineInputBorder(
@@ -194,10 +176,11 @@ Future<void> bayarSekarang() async {
               ),
             ),
 
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
+            /// RINGKASAN
             Container(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
                 color: Colors.red.shade50,
                 borderRadius: BorderRadius.circular(16),
@@ -205,14 +188,14 @@ Future<void> bayarSekarang() async {
               child: Column(
                 children: [
                   boxItem("Total Tagihan", "Rp $totalTagihan"),
-                  boxItem("Jumlah Bayar", "Rp $jumlahBayar"),
-                  boxItem("Sisa Tagihan", "Rp $sisa"),
+                  boxItem("Status", "Belum Dibayar"),
                 ],
               ),
             ),
 
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
+            /// METODE
             DropdownButtonFormField<String>(
               value: metode,
               items: ["Transfer", "Cash", "E-Wallet"]
@@ -221,11 +204,7 @@ Future<void> bayarSekarang() async {
                         child: Text(e),
                       ))
                   .toList(),
-              onChanged: (val) {
-                setState(() {
-                  metode = val!;
-                });
-              },
+              onChanged: (val) => setState(() => metode = val!),
               decoration: InputDecoration(
                 labelText: "Metode Pembayaran",
                 border: OutlineInputBorder(
@@ -234,22 +213,17 @@ Future<void> bayarSekarang() async {
               ),
             ),
 
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
 
+            /// BUTTON
             ElevatedButton(
               onPressed: bayarSekarang,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red,
-                padding: EdgeInsets.all(16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
+                padding: const EdgeInsets.all(16),
               ),
-              child: Text(
-                "Bayar Sekarang",
-                style: TextStyle(fontSize: 16),
-              ),
-            )
+              child: const Text("Bayar Sekarang"),
+            ),
           ],
         ),
       ),
