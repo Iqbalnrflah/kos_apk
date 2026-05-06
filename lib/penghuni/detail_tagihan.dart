@@ -40,7 +40,7 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
 
     try {
       final response = await http.post(
-        Uri.parse("https://kosback-production.up.railway.app/bayar"),
+        Uri.parse("http://192.168.1.10:3000/bayar"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "nama": widget.data['penghuni_nama'] ?? "User",
@@ -50,7 +50,6 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
 
       print("STATUS: ${response.statusCode}");
       print("BODY: ${response.body}");
-      print("URL HIT: https://kosback-production.up.railway.app/bayar");
 
       if (response.statusCode != 200) {
         throw Exception(response.body);
@@ -66,7 +65,6 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
         ),
       );
 
-      /// ✅ SIMPAN KE FIREBASE JIKA SUKSES
       if (result == true) {
         await FirebaseFirestore.instance.collection('pembayaran').add({
           'penghuni_nama': widget.data['penghuni_nama'],
@@ -80,7 +78,7 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
           'metode': metode,
           'tanggal_bayar': FieldValue.serverTimestamp(),
         });
-
+        Navigator.pushReplacementNamed(context, "/daftar_penghuni");
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Pembayaran berhasil")),
         );
@@ -140,7 +138,6 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
         child: ListView(
           children: [
 
-            /// INFO
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -162,7 +159,6 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
 
             const SizedBox(height: 20),
 
-            /// JUMLAH BAYAR (FIXED)
             TextField(
               enabled: false,
               controller: TextEditingController(
@@ -175,10 +171,8 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
                 ),
               ),
             ),
-
             const SizedBox(height: 20),
 
-            /// RINGKASAN
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'pemilik/register_page.dart';
+import 'penghuni/daftar_penghuni.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +18,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: AuthPage(),
+      routes: {
+        '/daftar_penghuni': (context) => DaftarPenghuniPage(),
+      },
     );
   }
 }

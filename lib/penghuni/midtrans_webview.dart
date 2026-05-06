@@ -22,22 +22,22 @@ class _MidtransWebViewState extends State<MidtransWebView> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onNavigationRequest: (request) {
-  print("URL: ${request.url}");
 
-  // 🔥 DETEKSI BALIK DARI MIDTRANS
-  if (request.url.contains("myapp://success")) {
-    Navigator.pop(context, true);
-    return NavigationDecision.prevent;
-  }
+            /// 🔥 DETEKSI SUCCESS
+            if (request.url.contains("finish") ||
+                request.url.contains("success")) {
+              Navigator.pop(context, true);
+              return NavigationDecision.prevent;
+            }
 
-  // fallback safety
-  if (request.url.contains("finish")) {
-    Navigator.pop(context, true);
-    return NavigationDecision.prevent;
-  }
+            /// CANCEL
+            if (request.url.contains("cancel")) {
+              Navigator.pop(context, false);
+              return NavigationDecision.prevent;
+            }
 
-  return NavigationDecision.navigate;
-},
+            return NavigationDecision.navigate;
+          },
         ),
       )
       ..loadRequest(Uri.parse(widget.url));
@@ -46,10 +46,7 @@ class _MidtransWebViewState extends State<MidtransWebView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Pembayaran"),
-        backgroundColor: Colors.red,
-      ),
+      appBar: AppBar(title: const Text("Pembayaran")),
       body: WebViewWidget(controller: controller),
     );
   }
