@@ -8,7 +8,7 @@ class PembayaranPage extends StatelessWidget {
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text("Data Pembayaran"),
-        backgroundColor: Colors.red.shade800,
+        backgroundColor: Color(0xFF9E182B),
       ),
 
       body: StreamBuilder<QuerySnapshot>(
@@ -56,7 +56,7 @@ class PembayaranPage extends StatelessWidget {
                 margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 padding: EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.red.shade800,
+                  color: Color(0xFF9E182B),
                   borderRadius: BorderRadius.circular(15),
                 ),
                 child: Row(
@@ -91,7 +91,7 @@ class PembayaranPage extends StatelessWidget {
                       child: Text(
                         "Belum Bayar",
                         style: TextStyle(
-                          color: Colors.red,
+                          color: Color(0xFF9E182B),
                           fontWeight: FontWeight.bold,
                         ),
                       ),

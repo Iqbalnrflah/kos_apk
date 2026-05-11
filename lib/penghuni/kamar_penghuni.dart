@@ -38,10 +38,10 @@ class KamarPage extends StatelessWidget {
 
               bool isTerisi = data['status'] == 'terisi';
 
-              Color: isTerisi ? Colors.grey : Colors.red;
+              Color: isTerisi ? Colors.grey : Color(0xFF9E182B);
               return GestureDetector(
                 onTap: isTerisi
-    ? null // 🔒 tidak bisa diklik
+    ? null
     : () {
         Navigator.push(
           context,
@@ -55,7 +55,7 @@ class KamarPage extends StatelessWidget {
       },
                 child: Container(
                   decoration: BoxDecoration(
-                    color: isTerisi ? Colors.grey : Colors.red,
+                    color: isTerisi ? Colors.grey : Color(0xFF9E182B),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Center(

@@ -28,7 +28,7 @@ class _HomePenghuniState extends State<HomePenghuni> {
 
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
-        backgroundColor: Colors.red.shade800,
+        backgroundColor: Color(0xFF9E182B),
         selectedItemColor: Colors.white,
         unselectedItemColor: Colors.white70,
         type: BottomNavigationBarType.fixed,

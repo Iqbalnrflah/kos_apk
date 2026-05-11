@@ -7,7 +7,7 @@ class DaftarPenghuniPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Daftar Pembayaran"),
-        backgroundColor: Colors.red,
+        backgroundColor: Color(0xFF9E182B),
       ),
 
       body: StreamBuilder<QuerySnapshot>(
@@ -61,8 +61,8 @@ class DaftarPenghuniPage extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                 decoration: BoxDecoration(
                   color: status == "lunas"
-                      ? Colors.green
-                      : Colors.orange,
+                      ? Color(0xFF4CAF50)
+                      : Color(0xFFFF9800),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(

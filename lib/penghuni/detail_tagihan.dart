@@ -131,7 +131,7 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Detail Tagihan"),
-        backgroundColor: Colors.red,
+        backgroundColor: Color(0xFF9E182B),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -213,7 +213,7 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
             ElevatedButton(
               onPressed: bayarSekarang,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.red,
+                backgroundColor: Color(0xFF9E182B),
                 padding: const EdgeInsets.all(16),
               ),
               child: const Text("Bayar Sekarang"),

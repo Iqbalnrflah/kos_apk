@@ -13,8 +13,8 @@ class ProfilPage extends StatefulWidget {
 
 class _ProfilPageState extends State<ProfilPage> {
   File? _image;
-  String? imageBase64; // 🔥 data baru
-  String? imageUrl;    // 🔥 data dari Firestore
+  String? imageBase64;
+  String? imageUrl;
   bool isLoading = false;
 
   final picker = ImagePicker();
@@ -55,7 +55,7 @@ class _ProfilPageState extends State<ProfilPage> {
   Future<void> pickImage() async {
     final pickedFile = await picker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 40, // 🔥 makin kecil makin ringan
+      imageQuality: 40,
     );
 
     if (pickedFile != null) {

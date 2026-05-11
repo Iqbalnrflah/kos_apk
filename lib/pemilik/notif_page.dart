@@ -10,7 +10,7 @@ class NotifPage extends StatelessWidget {
           Container(
             width: double.infinity,
             padding: EdgeInsets.symmetric(vertical: 15),
-            color: Colors.red.shade800,
+            color: Color(0xFF9E182B),
             child: Center(
               child: Text(
                 "Notifikasi",

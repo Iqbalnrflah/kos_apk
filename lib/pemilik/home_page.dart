@@ -46,7 +46,7 @@ class HomePage extends StatelessWidget {
                   margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   padding: EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.red.shade800,
+                    color: Color(0xFF9E182B),
                     borderRadius: BorderRadius.circular(15),
                   ),
                   child: Column(

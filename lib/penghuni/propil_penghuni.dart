@@ -1,157 +1,305 @@
+import 'dart:io';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:kospay_dart/pemilik/register_page.dart'; // pastikan ini sesuai
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kospay_dart/pemilik/register_page.dart';
 
 class EditProfilPenghuniPage extends StatefulWidget {
   const EditProfilPenghuniPage({super.key});
 
   @override
-  State<EditProfilPenghuniPage> createState() => _EditProfilPenghuniPageState();
+  State<EditProfilPenghuniPage> createState() =>
+      _EditProfilPenghuniPageState();
 }
 
-class _EditProfilPenghuniPageState extends State<EditProfilPenghuniPage> {
-  final TextEditingController namaController = TextEditingController();
-  final TextEditingController emailController = TextEditingController();
-  final TextEditingController passwordController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
+class _EditProfilPenghuniPageState
+    extends State<EditProfilPenghuniPage> {
 
-  bool isPasswordHidden = true;
+  File? _image;
 
-  /// FUNCTION LOGOUT
-  void handleLogout() async {
+  String? imageBase64;
+  String? imageUrl;
+
+  bool isLoading = false;
+
+  final picker = ImagePicker();
+
+  final namaController = TextEditingController();
+  final telpController = TextEditingController();
+
+  User? user = FirebaseAuth.instance.currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    loadProfile();
+  }
+
+  /// LOAD PROFILE
+  Future<void> loadProfile() async {
+    try {
+      var doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .get();
+
+      if (doc.exists) {
+        var data = doc.data();
+
+        setState(() {
+          namaController.text = data?['nama'] ?? '';
+          telpController.text = data?['telp'] ?? '';
+          imageUrl = data?['photo'] ?? '';
+        });
+      }
+    } catch (e) {
+      print("LOAD ERROR: $e");
+    }
+  }
+
+  /// PICK IMAGE
+  Future<void> pickImage() async {
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 40,
+    );
+
+    if (pickedFile != null) {
+      File imageFile = File(pickedFile.path);
+
+      String base64 =
+          base64Encode(imageFile.readAsBytesSync());
+
+      setState(() {
+        _image = imageFile;
+        imageBase64 = base64;
+      });
+    }
+  }
+
+  /// SAVE PROFILE
+  Future<void> saveProfile() async {
+    setState(() => isLoading = true);
+
+    try {
+      String? photoData = imageBase64;
+
+      if (photoData == null || photoData.isEmpty) {
+        photoData = imageUrl;
+      }
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .set({
+        'nama': namaController.text,
+        'telp': telpController.text,
+        'email': user!.email,
+        'photo': photoData ?? '',
+      }, SetOptions(merge: true));
+
+      setState(() {
+        imageUrl = photoData;
+        _image = null;
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Profil berhasil disimpan"),
+        ),
+      );
+
+    } catch (e) {
+      print("ERROR SAVE: $e");
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Gagal simpan profil"),
+        ),
+      );
+    }
+
+    setState(() => isLoading = false);
+  }
+
+  /// LOGOUT
+  Future<void> handleLogout() async {
     await FirebaseAuth.instance.signOut();
+
     if (!mounted) return;
+
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
-        builder: (context) => AuthPage(),
+        builder: (_) => AuthPage(),
       ),
       (route) => false,
+    );
+  }
+
+  /// PROFILE IMAGE
+  Widget buildProfileImage() {
+    if (_image != null) {
+      return CircleAvatar(
+        radius: 60,
+        backgroundImage: FileImage(_image!),
+      );
+    }
+
+    if (imageUrl != null && imageUrl!.isNotEmpty) {
+      return CircleAvatar(
+        radius: 60,
+        backgroundImage:
+            MemoryImage(base64Decode(imageUrl!)),
+      );
+    }
+
+    return const CircleAvatar(
+      radius: 60,
+      child: Icon(
+        Icons.camera_alt,
+        size: 40,
+      ),
+    );
+  }
+
+  /// TEXTFIELD
+  Widget buildTextField({
+    required String label,
+    required TextEditingController controller,
+    bool readOnly = false,
+    TextInputType keyboard =
+        TextInputType.text,
+  }) {
+    return TextField(
+      controller: controller,
+      readOnly: readOnly,
+      keyboardType: keyboard,
+      decoration: InputDecoration(
+        labelText: label,
+        border: OutlineInputBorder(
+          borderRadius:
+              BorderRadius.circular(12),
+        ),
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF2F2F2),
+      backgroundColor: Colors.grey[200],
+
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF2F2F2),
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
+        backgroundColor: Color(0xFF9E182B),
         title: const Text(
           "Edit Profil",
-          style: TextStyle(color: Colors.black),
+          style: TextStyle(
+            color: Colors.white,
+          ),
         ),
         centerTitle: true,
+
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: handleLogout,
+          )
+        ],
       ),
+
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: [
-            /// FOTO PROFIL
-            Stack(
-              children: [
-                const CircleAvatar(
-                  radius: 50,
-                  backgroundImage: AssetImage('assets/profile.png'),
-                ),
-                Positioned(
-                  bottom: 0,
-                  right: 0,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                    ),
-                    child: IconButton(
-                      icon: const Icon(Icons.camera_alt, size: 20),
-                      onPressed: () {},
-                    ),
-                  ),
-                ),
-              ],
-            ),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
 
-            const SizedBox(height: 30),
+          child: Column(
+            children: [
 
-            buildTextField("Nama", namaController),
-            const SizedBox(height: 15),
+              const SizedBox(height: 20),
 
-            buildTextField("Email", emailController),
-            const SizedBox(height: 15),
+              /// FOTO
+              GestureDetector(
+                onTap: pickImage,
+                child: buildProfileImage(),
+              ),
 
-            /// PASSWORD
-            TextField(
-              controller: passwordController,
-              obscureText: isPasswordHidden,
-              decoration: InputDecoration(
-                labelText: "Password",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    isPasswordHidden
-                        ? Icons.visibility_off
-                        : Icons.visibility,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      isPasswordHidden = !isPasswordHidden;
-                    });
-                  },
+              const SizedBox(height: 15),
+
+              const Text(
+                "Tekan foto untuk mengganti",
+                style: TextStyle(
+                  color: Colors.grey,
                 ),
               ),
-            ),
 
-            const SizedBox(height: 15),
+              const SizedBox(height: 30),
 
-            buildTextField("Nomor Handphone", phoneController),
+              /// NAMA
+              buildTextField(
+                label: "Nama",
+                controller: namaController,
+              ),
 
-            const SizedBox(height: 30),
+              const SizedBox(height: 15),
 
-            /// BUTTON
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                /// ICON BACK
-                IconButton(
-                  icon: const Icon(Icons.logout, color: Colors.red),
-                  onPressed: handleLogout,
+              /// TELP
+              buildTextField(
+                label: "No Telp",
+                controller: telpController,
+                keyboard: TextInputType.phone,
+              ),
+
+              const SizedBox(height: 15),
+
+              /// EMAIL
+              buildTextField(
+                label: "Email",
+                controller: TextEditingController(
+                  text: user?.email ?? "",
                 ),
+                readOnly: true,
+              ),
 
-                /// BUTTON KELUAR
-                ElevatedButton(
+              const SizedBox(height: 30),
+
+              /// BUTTON SIMPAN
+              SizedBox(
+                width: double.infinity,
+
+                child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 35, vertical: 12),
+                    backgroundColor: Color(0xFF9E182B),
+                    padding:
+                        const EdgeInsets.symmetric(
+                      vertical: 15,
+                    ),
+
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
+                      borderRadius:
+                          BorderRadius.circular(12),
                     ),
                   ),
-                  onPressed: handleLogout,
-                  child: const Text("Keluar"),
-                )
-              ],
-            )
-          ],
-        ),
-      ),
-    );
-  }
 
-  /// TEXTFIELD
-  Widget buildTextField(String label, TextEditingController controller) {
-    return TextField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: label,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+                  onPressed:
+                      isLoading ? null : saveProfile,
+
+                  child: isLoading
+                      ? const CircularProgressIndicator(
+                          color: Colors.white,
+                        )
+                      : const Text(
+                          "Simpan Profil",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                          ),
+                        ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

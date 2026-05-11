@@ -132,7 +132,7 @@ class _IsiKamarState extends State<IsiKamar> {
                     "Rp $harga",
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.red,
+                      color: Color(0xFF9E182B),
                     ),
                   ),
                 ],

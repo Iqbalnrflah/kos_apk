@@ -35,7 +35,7 @@ class _MainPageState extends State<MainPage> {
       onTap: () => changeTab(i),
       child: Icon(
         icon,
-        size: 30, // 🔥 BESAR (ini yang kamu mau)
+        size: 30,
         color: active ? Colors.white : Colors.white70,
       ),
     );
@@ -69,7 +69,7 @@ class _MainPageState extends State<MainPage> {
             MaterialPageRoute(builder: (_) => TambahKamarPage()),
           );
         },
-        backgroundColor: Colors.red.shade900,
+        backgroundColor: Color(0xFF9E182B),
         elevation: 6,
         child: Icon(Icons.add, size: 30),
       ),
@@ -78,7 +78,7 @@ class _MainPageState extends State<MainPage> {
       /// 🔥 NAVBAR MINI TAPI ICON BESAR
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: Colors.red.shade800,
+          color: Color(0xFF9E182B),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(18),
             topRight: Radius.circular(18),

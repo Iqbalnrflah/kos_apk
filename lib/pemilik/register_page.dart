@@ -18,8 +18,6 @@ class AuthPageState extends State<AuthPage> {
   final nama = TextEditingController();
   final phone = TextEditingController();
   final confirmPassword = TextEditingController();
-
-  /// 🔥 LOGIN FIX
   Future<void> login() async {
     try {
       UserCredential user = await FirebaseAuth.instance
@@ -27,32 +25,23 @@ class AuthPageState extends State<AuthPage> {
         email: email.text.trim(),
         password: password.text.trim(),
       );
-
-      // 🔥 AMBIL DATA USER
       DocumentSnapshot data = await FirebaseFirestore.instance
           .collection('users')
           .doc(user.user!.uid)
           .get();
-
-      // 🔥 CEK DATA ADA / TIDAK
       if (!data.exists) {
         throw Exception("Data user tidak ditemukan di Firestore");
       }
-
       Map<String, dynamic> userData =
           data.data() as Map<String, dynamic>;
-
       String userRole = userData['role'] ?? "penghuni";
-
       print("ROLE LOGIN: $userRole");
-
-      /// 🔥 PINDAH HALAMAN SESUAI ROLE
       Widget targetPage;
 
       if (userRole == "pemilik") {
         targetPage = MainPage();
       } else {
-        targetPage = HomePenghuni(); // tanpa search ✔️
+        targetPage = HomePenghuni();
       }
 
       Navigator.pushAndRemoveUntil(
@@ -69,8 +58,6 @@ class AuthPageState extends State<AuthPage> {
       );
     }
   }
-
-  /// 🔥 REGISTER FIX
   Future<void> register() async {
     if (password.text != confirmPassword.text) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -118,108 +105,166 @@ class AuthPageState extends State<AuthPage> {
       );
     }
   }
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    backgroundColor: Colors.white,
+    body: SafeArea(
+      child: Column(
+        children: [
+          SizedBox(height: 50),
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Column(
-          children: [
-            SizedBox(height: 20),
-
-            /// SWITCH LOGIN / REGISTER
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                GestureDetector(
-                  onTap: () => setState(() => isLogin = true),
-                  child: Text(
-                    "Login",
-                    style: TextStyle(
-                      color: isLogin ? Colors.white : Colors.grey,
-                      fontSize: 18,
-                    ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: () => setState(() => isLogin = true),
+                child: Text(
+                  "Login",
+                  style: TextStyle(
+                    color: isLogin ? Colors.black : Colors.grey,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(width: 20),
-                GestureDetector(
-                  onTap: () => setState(() => isLogin = false),
-                  child: Text(
-                    "Registrasi",
-                    style: TextStyle(
-                      color: !isLogin ? Colors.white : Colors.grey,
-                      fontSize: 18,
-                    ),
+              ),
+
+              SizedBox(width: 30),
+
+              GestureDetector(
+                onTap: () => setState(() => isLogin = false),
+                child: Text(
+                  "Registrasi",
+                  style: TextStyle(
+                    color: !isLogin ? Colors.black : Colors.grey,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              ],
+              ),
+            ],
+          ),
+
+          /// BIAR FORM NEMPEL BAWAH
+          Expanded(
+            child: Container(),
+          ),
+
+          /// FORM LOGIN / REGISTER
+          AnimatedContainer(
+            duration: Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+
+            height: isLogin ? 360 : 520,
+            width: double.infinity,
+
+            padding: EdgeInsets.all(20),
+
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.vertical(
+                top: Radius.circular(30),
+              ),
             ),
 
-            SizedBox(height: 30),
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
 
-            /// FORM
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(30)),
-                ),
-                child: Column(
-                  children: [
+                  /// ROLE
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      _roleButton("penghuni"),
+                      SizedBox(width: 10),
+                      _roleButton("pemilik"),
+                    ],
+                  ),
 
-                    /// ROLE SWITCH
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        _roleButton("penghuni"),
-                        SizedBox(width: 10),
-                        _roleButton("pemilik"),
-                      ],
+                  SizedBox(height: 25),
+
+                  /// REGISTER ONLY
+                  if (!isLogin)
+                    TextField(
+                      controller: nama,
+                      decoration: InputDecoration(
+                        labelText: "Nama Lengkap",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
                     ),
 
-                    SizedBox(height: 20),
+                  if (!isLogin)
+                    SizedBox(height: 15),
 
-                    if (!isLogin)
-                      TextField(
-                        controller: nama,
-                        decoration:
-                            InputDecoration(labelText: "Nama Lengkap"),
-                      ),
-
-                    if (!isLogin)
-                      TextField(
-                        controller: phone,
-                        decoration:
-                            InputDecoration(labelText: "Nomor HP"),
-                      ),
-
+                  if (!isLogin)
                     TextField(
-                      controller: email,
-                      decoration: InputDecoration(labelText: "Email"),
+                      controller: phone,
+                      decoration: InputDecoration(
+                        labelText: "Nomor HP",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
                     ),
 
+                  if (!isLogin)
+                    SizedBox(height: 15),
+
+                  /// EMAIL
+                  TextField(
+                    controller: email,
+                    decoration: InputDecoration(
+                      labelText: "Email",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(height: 15),
+
+                  /// PASSWORD
+                  TextField(
+                    controller: password,
+                    obscureText: true,
+                    decoration: InputDecoration(
+                      labelText: "Password",
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+
+                  /// KONFIRMASI PASSWORD
+                  if (!isLogin)
+                    SizedBox(height: 15),
+
+                  if (!isLogin)
                     TextField(
-                      controller: password,
+                      controller: confirmPassword,
                       obscureText: true,
-                      decoration: InputDecoration(labelText: "Password"),
+                      decoration: InputDecoration(
+                        labelText: "Konfirmasi Password",
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
                     ),
 
-                    if (!isLogin)
-                      TextField(
-                        controller: confirmPassword,
-                        obscureText: true,
-                        decoration:
-                            InputDecoration(labelText: "Konfirmasi Password"),
-                      ),
+                  SizedBox(height: 30),
 
-                    SizedBox(height: 20),
-
-                    ElevatedButton(
+                  /// BUTTON
+                  SizedBox(
+                    width: 200,
+                    height: 50,
+                    child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
+                        backgroundColor: Color(0xFF9E182B),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
                       ),
                       onPressed: () {
                         if (isLogin) {
@@ -228,17 +273,24 @@ class AuthPageState extends State<AuthPage> {
                           register();
                         }
                       },
-                      child: Text(isLogin ? "Masuk" : "Daftar"),
+                      child: Text(
+                        isLogin ? "Masuk" : "Daftar",
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
 
   /// ROLE BUTTON
   Widget _roleButton(String value) {
@@ -253,7 +305,7 @@ class AuthPageState extends State<AuthPage> {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         decoration: BoxDecoration(
-          color: selected ? Colors.red : Colors.grey[300],
+          color: selected ? Color(0xFF9E182B) : Colors.grey[300],
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(

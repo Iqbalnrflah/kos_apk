@@ -51,7 +51,7 @@ class _HomeContentState extends State<HomeContent> {
 
         return CircleAvatar(
           radius: 18,
-          backgroundColor: Colors.red.shade800,
+          backgroundColor: const Color.fromARGB(255, 160, 160, 160),
           child: Icon(Icons.person, color: Colors.white),
         );
       },
@@ -99,7 +99,7 @@ class _HomeContentState extends State<HomeContent> {
             child: Container(
               padding: EdgeInsets.symmetric(horizontal: 12),
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.red),
+                border: Border.all(color: Color(0xFF9E182B)),
                 borderRadius: BorderRadius.circular(25),
               ),
               child: Row(
@@ -117,7 +117,7 @@ class _HomeContentState extends State<HomeContent> {
                       ),
                     ),
                   ),
-                  Icon(Icons.search, color: Colors.red),
+                  Icon(Icons.search, color: Color(0xFF9E182B)),
                 ],
               ),
             ),
@@ -141,10 +141,7 @@ class _HomeContentState extends State<HomeContent> {
                 if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                   return Center(child: Text("Belum ada data"));
                 }
-
                 var data = snapshot.data!.docs;
-
-                /// 🔥 FILTER
                 var filteredData = data.where((doc) {
                   var item = doc.data() as Map<String, dynamic>;
 
@@ -185,7 +182,7 @@ class _HomeContentState extends State<HomeContent> {
                             horizontal: 12, vertical: 6),
                         padding: EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.red.shade800,
+                          color: Color (0xFF9E182B),
                           borderRadius: BorderRadius.circular(15),
                         ),
                         child: Column(

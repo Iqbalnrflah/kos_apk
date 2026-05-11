@@ -89,7 +89,7 @@ class _TambahKamarPageState extends State<TambahKamarPage> {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15),
-            borderSide: BorderSide(color: Colors.red),
+            borderSide: BorderSide(color: Color(0xFF9E182B)),
           ),
         ),
       ),
@@ -149,7 +149,7 @@ class _TambahKamarPageState extends State<TambahKamarPage> {
                 child: ElevatedButton(
                   onPressed: tambahKamar,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red.shade800,
+                    backgroundColor: Color(0xFF9E182B),
                     minimumSize: Size(double.infinity, 45),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),

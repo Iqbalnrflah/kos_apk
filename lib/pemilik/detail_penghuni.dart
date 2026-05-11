@@ -65,7 +65,7 @@ class DetailPenghuniPage extends StatelessWidget {
               return Container(
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(vertical: 10),
-                color: Colors.red.shade800,
+                color: Color(0xFF9E182B),
                 child: Text(
                   alamat,
                   textAlign: TextAlign.center,
@@ -130,7 +130,7 @@ class DetailPenghuniPage extends StatelessWidget {
                           ElevatedButton(
                             onPressed: () => kosongkanKamar(context),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red.shade800,
+                              backgroundColor: Color(0xFF9E182B),
                               minimumSize: Size(double.infinity, 45),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),

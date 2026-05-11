@@ -29,7 +29,7 @@ class DetailKosPage extends StatelessWidget {
                 margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                 decoration: BoxDecoration(
-                  color: Colors.red.shade800,
+                  color: Color(0xFF9E182B),
                   borderRadius: BorderRadius.circular(10), // 🔥 biar ga full kotak
                 ),
                 child: Center( // 🔥 bikin teks di tengah
@@ -105,10 +105,10 @@ class DetailKosPage extends StatelessWidget {
                         decoration: BoxDecoration(
                           color: isTerisi
                               ? Colors.white
-                              : Colors.red.shade800,
+                              : Color(0xFF9E182B),
                           borderRadius: BorderRadius.circular(15),
                           border: Border.all(
-                            color: Colors.red.shade800,
+                            color: Color(0xFF9E182B),
                             width: 2,
                           ),
                         ),
@@ -119,7 +119,7 @@ class DetailKosPage extends StatelessWidget {
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
                               color: isTerisi
-                                  ? Colors.red.shade800
+                                  ? Color(0xFF9E182B)
                                   : Colors.white,
                             ),
                           ),

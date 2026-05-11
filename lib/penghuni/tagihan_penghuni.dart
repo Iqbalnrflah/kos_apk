@@ -47,7 +47,7 @@ class TagihanPenghuniPage extends StatelessWidget {
           },
           child: CircleAvatar(
             radius: 18,
-            backgroundColor: Colors.red,
+            backgroundColor: Color(0xFF9E182B),
             backgroundImage: (photo != null && photo.isNotEmpty)
                 ? MemoryImage(base64Decode(photo))
                 : null,
@@ -77,45 +77,50 @@ class TagihanPenghuniPage extends StatelessWidget {
 
       body: Column(
         children: [
-
-          /// 🔥 HEADER FULL
+        
           Container(
             width: double.infinity,
-            color: Colors.red.shade800,
             padding: EdgeInsets.only(
-              top: MediaQuery.of(context).padding.top + 10,
+              top: 65,
               left: 12,
               right: 12,
-              bottom: 20,
+              bottom: 10,
             ),
-            child: Column(
+            color: Colors.white,
+
+            child: Row(
+              mainAxisAlignment:
+                  MainAxisAlignment.spaceBetween,
               children: [
+              
+                SizedBox(),
 
-                /// 🔹 PROFILE
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(),
-                    buildProfileIcon(context),
-                  ],
-                ),
-
-                SizedBox(height: 10),
-
-                /// 🔹 TITLE
-                Text(
-                  "Tagihan Bulanan",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                buildProfileIcon(context),
               ],
             ),
           ),
 
-          /// 🔥 LIST TAGIHAN (FIX ERROR DI SINI)
+          /// BAGIAN MERAH
+          Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(
+              vertical: 14,
+            ),
+            color: Color(0xFF9E182B),
+
+            child: Center(
+              child: Text(
+                "Tagihan Bulanan",
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+
+          /// LIST
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
@@ -123,36 +128,51 @@ class TagihanPenghuniPage extends StatelessWidget {
                   .snapshots(),
 
               builder: (context, snapshot) {
-
+              
                 if (snapshot.hasError) {
-                  return Center(child: Text("Error: ${snapshot.error}"));
+                  return Center(
+                    child: Text(
+                      "Error: ${snapshot.error}",
+                    ),
+                  );
                 }
 
                 if (!snapshot.hasData) {
-                  return Center(child: CircularProgressIndicator());
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
                 }
 
-                /// ✅ FIX UTAMA: FILTER DI APP (NO INDEX ERROR)
                 var data = snapshot.data!.docs.where((doc) {
-                  var item = doc.data() as Map<String, dynamic>;
+                
+                  var item =
+                      doc.data() as Map<String, dynamic>;
+
                   return item['penghuniId'] == uid;
+
                 }).toList();
 
                 if (data.isEmpty) {
-                  return Center(child: Text("Belum ada tagihan"));
+                  return Center(
+                    child: Text("Belum ada tagihan"),
+                  );
                 }
 
                 return ListView.builder(
                   itemCount: data.length,
+
                   itemBuilder: (context, index) {
-
+                  
                     var doc = data[index];
-                    var item = doc.data() as Map<String, dynamic>;
 
-                    String nama = item['penghuni_nama'] ?? "-";
+                    var item =
+                        doc.data() as Map<String, dynamic>;
 
-                    /// 🔥 HANDLE TANGGAL AMAN
+                    String nama =
+                        item['penghuni_nama'] ?? "-";
+
                     DateTime tglMasuk;
+
                     var raw = item['tanggal_masuk'];
 
                     if (raw is Timestamp) {
@@ -161,17 +181,23 @@ class TagihanPenghuniPage extends StatelessWidget {
                       tglMasuk = DateTime.now();
                     }
 
-                    bool jatuhTempo = DateTime.now().day >= tglMasuk.day;
-                    String status = jatuhTempo ? "Jatuh Tempo" : "Mendatang";
+                    bool jatuhTempo =
+                        DateTime.now().day >= tglMasuk.day;
 
-                    /// 🔥 BULAN DEPAN (TANPA TAHUN)
+                    String status =
+                        jatuhTempo
+                            ? "Jatuh Tempo"
+                            : "Mendatang";
+
                     DateTime tagihanDate = DateTime(
                       tglMasuk.month == 12
                           ? tglMasuk.year + 1
                           : tglMasuk.year,
+
                       tglMasuk.month == 12
                           ? 1
                           : tglMasuk.month + 1,
+
                       tglMasuk.day,
                     );
 
@@ -179,12 +205,17 @@ class TagihanPenghuniPage extends StatelessWidget {
                         "${tagihanDate.day.toString().padLeft(2, '0')}/${tagihanDate.month.toString().padLeft(2, '0')}";
 
                     String kamarId = doc.id;
-                    String kosId = doc.reference.parent.parent?.id ?? "";
+
+                    String kosId =
+                        doc.reference.parent.parent?.id ?? "";
 
                     return GestureDetector(
+                    
                       onTap: () {
+                      
                         Navigator.push(
                           context,
+
                           MaterialPageRoute(
                             builder: (_) => DetailTagihanPage(
                               data: item,
@@ -194,51 +225,78 @@ class TagihanPenghuniPage extends StatelessWidget {
                           ),
                         );
                       },
-                      child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                        padding: EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.red.shade800,
-                          borderRadius: BorderRadius.circular(15),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
 
+                      child: Container(
+                        margin: EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 6,
+                        ),
+
+                        padding: EdgeInsets.all(16),
+
+                        decoration: BoxDecoration(
+                          color: Color(0xFF9E182B),
+                          borderRadius:
+                              BorderRadius.circular(15),
+                        ),
+
+                        child: Row(
+                          mainAxisAlignment:
+                              MainAxisAlignment.spaceBetween,
+
+                          children: [
+                          
                             Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment:
+                                  CrossAxisAlignment.start,
+
                               children: [
+                              
                                 Text(
                                   nama,
                                   style: TextStyle(
                                     color: Colors.white,
-                                    fontWeight: FontWeight.bold,
+                                    fontWeight:
+                                        FontWeight.bold,
                                   ),
                                 ),
+
                                 SizedBox(height: 6),
+
                                 Text(
                                   status,
-                                  style: TextStyle(color: Colors.white70),
+                                  style: TextStyle(
+                                    color: Colors.white70,
+                                  ),
                                 ),
                               ],
                             ),
 
                             Container(
-                              padding: EdgeInsets.symmetric(
-                                  horizontal: 12, vertical: 6),
+                              padding:
+                                  EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 6,
+                              ),
+
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
+
+                                borderRadius:
+                                    BorderRadius.circular(20),
                               ),
+
                               child: Text(
                                 bulan,
                                 style: TextStyle(
-                                  color: Colors.red,
-                                  fontWeight: FontWeight.bold,
+                                  color:
+                                      Color(0xFF9E182B),
+
+                                  fontWeight:
+                                      FontWeight.bold,
                                 ),
                               ),
                             )
-
                           ],
                         ),
                       ),

@@ -19,7 +19,7 @@ class RiwayatPage extends StatelessWidget {
           Container(
             width: double.infinity,
             padding: EdgeInsets.symmetric(vertical: 15),
-            color: Colors.red.shade800,
+            color: Color(0xFF9E182B),
             child: Center(
               child: Text(
                 "Daftar Tersimpan",
@@ -131,7 +131,7 @@ class RiwayatPage extends StatelessWidget {
                                     padding: EdgeInsets.symmetric(
                                         horizontal: 12, vertical: 4),
                                     decoration: BoxDecoration(
-                                      color: Colors.red.shade800,
+                                      color: Color(0xFF9E182B),
                                       borderRadius: BorderRadius.circular(20),
                                     ),
                                     child: Text(
