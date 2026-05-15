@@ -1,10 +1,11 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:convert';
-
 import 'kamar_penghuni.dart';
 import 'propil_penghuni.dart';
+import '../widgets/header.dart';
 
 class HomeContent extends StatefulWidget {
   @override
@@ -13,87 +14,12 @@ class HomeContent extends StatefulWidget {
 
 class _HomeContentState extends State<HomeContent> {
   String search = "";
-
-  /// 🔥 PROFILE ICON FIREBASE (BALIKIN)
-  Widget buildProfileIcon() {
-    final user = FirebaseAuth.instance.currentUser;
-
-    if (user == null) {
-      return CircleAvatar(
-        radius: 18,
-        child: Icon(Icons.person),
-      );
-    }
-
-    return StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
-          return CircleAvatar(
-            radius: 18,
-            backgroundColor: Colors.grey,
-            child: Icon(Icons.person, color: Colors.white),
-          );
-        }
-
-        var data = snapshot.data!.data() as Map<String, dynamic>?;
-        String? photo = data?['photo'];
-
-        if (photo != null && photo.isNotEmpty) {
-          return CircleAvatar(
-            radius: 18,
-            backgroundImage: MemoryImage(base64Decode(photo)),
-          );
-        }
-
-        return CircleAvatar(
-          radius: 18,
-          backgroundColor: const Color.fromARGB(255, 160, 160, 160),
-          child: Icon(Icons.person, color: Colors.white),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Column(
         children: [
-
-          /// 🔥 HEADER + PROFILE (BALIK)
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "",
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => EditProfilPenghuniPage(),
-                      ),
-                    );
-                  },
-                  child: buildProfileIcon(),
-                ),
-              ],
-            ),
-          ),
-
-          /// 🔍 SEARCH
+          CustomHeader(title: "Beranda"),
           Padding(
             padding: EdgeInsets.all(12),
             child: Container(

@@ -3,6 +3,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'midtrans_webview.dart';
+import '../widgets/success_dialog.dart';
+import '../widgets/header.dart';
 
 class DetailTagihanPage extends StatefulWidget {
   final Map<String, dynamic> data;
@@ -40,7 +42,7 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
 
     try {
       final response = await http.post(
-        Uri.parse("http://192.168.1.10:3000/bayar"),
+        Uri.parse("https://api.kospay.my.id/bayar"),
         headers: {"Content-Type": "application/json"},
         body: jsonEncode({
           "nama": widget.data['penghuni_nama'] ?? "User",
@@ -64,25 +66,39 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
           builder: (_) => MidtransWebView(url: url),
         ),
       );
+      print("Hasil Webview: $result");
+        if (result == true) {
+          print("Masuk Firebase");
+          await FirebaseFirestore.instance
+              .collection('pembayaran')
+              .add({
+            'penghuni_nama': widget.data['penghuni_nama'],
+            'penghuni_phone': widget.data['penghuni_phone'],
+            'kosId': widget.kosId,
+            'kamarId': widget.kamarId,
+            'jumlah_bayar': totalTagihan,
+            'total_tagihan': totalTagihan,
+            'sisa_tagihan': 0,
+            'status': 'Lunas',
+            'metode': metode,
+            'tanggal_bayar': FieldValue.serverTimestamp(),
+          });
 
-      if (result == true) {
-        await FirebaseFirestore.instance.collection('pembayaran').add({
-          'penghuni_nama': widget.data['penghuni_nama'],
-          'penghuni_phone': widget.data['penghuni_phone'],
-          'kosId': widget.kosId,
-          'kamarId': widget.kamarId,
-          'jumlah_bayar': totalTagihan,
-          'total_tagihan': totalTagihan,
-          'sisa_tagihan': 0,
-          'status': 'berhasil',
-          'metode': metode,
-          'tanggal_bayar': FieldValue.serverTimestamp(),
-        });
-        Navigator.pushReplacementNamed(context, "/daftar_penghuni");
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Pembayaran berhasil")),
-        );
-      } else {
+          /// UPDATE STATUS KAMAR
+          await FirebaseFirestore.instance
+              .collection('kost')
+              .doc(widget.kosId)
+              .collection('kamar')
+              .doc(widget.kamarId)
+              .update({
+            'status_pembayaran': 'Lunas',
+          });
+          await showSuccessDialog(context);
+          Navigator.pushReplacementNamed(
+            context,
+            "/daftar_penghuni",
+          );
+        } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Pembayaran dibatalkan")),
         );
@@ -137,7 +153,7 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
         padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
-
+            CustomHeader(title: "Detail Tagihan"),
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(

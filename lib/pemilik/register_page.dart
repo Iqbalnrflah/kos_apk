@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kospay_dart/pemilik/main_page.dart';
 import 'package:kospay_dart/penghuni/home_page_penghuni.dart';
+import '../widgets/costum_dialog.dart';
 
 class AuthPage extends StatefulWidget {
   @override
@@ -11,6 +12,9 @@ class AuthPage extends StatefulWidget {
 
 class AuthPageState extends State<AuthPage> {
   bool isLogin = true;
+  bool isLoading = false;
+  bool showPassword = false;
+  bool showConfirmPassword = false;
   String role = "penghuni";
 
   final email = TextEditingController();
@@ -19,6 +23,9 @@ class AuthPageState extends State<AuthPage> {
   final phone = TextEditingController();
   final confirmPassword = TextEditingController();
   Future<void> login() async {
+    setState(() {
+      isLoading = true;
+    });
     try {
       UserCredential user = await FirebaseAuth.instance
           .signInWithEmailAndPassword(
@@ -43,7 +50,16 @@ class AuthPageState extends State<AuthPage> {
       } else {
         targetPage = HomePenghuni();
       }
-
+      await showCustomDialog(
+        context: context,
+        icon: Icons.check_circle,
+        color: Colors.green,
+        title: "Login Berhasil",
+        subtitle: "Selamat datang kembali",
+      );
+      setState(() {
+        isLoading = false;
+      });
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (_) => targetPage),
@@ -51,21 +67,28 @@ class AuthPageState extends State<AuthPage> {
       );
 
     } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
       print("ERROR LOGIN: $e");
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Login gagal")),
-      );
+      await showCustomDialog(
+        context: context,
+        icon: Icons.error,
+        color: Colors.red,
+        title: "Login Gagal",
+        subtitle: "Email atau password salah");
     }
   }
   Future<void> register() async {
     if (password.text != confirmPassword.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Password tidak sama")),
-      );
+      await showCustomDialog(
+        context: context,
+        icon: Icons.error,
+        color: Colors.orange,
+        title: "Password Tidak Cocok",
+        subtitle: "Password dan konfirmasi password tidak cocok");
       return;
     }
-
     try {
       UserCredential user = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
@@ -83,26 +106,31 @@ class AuthPageState extends State<AuthPage> {
         'phone': phone.text,
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Register berhasil")),
-      );
-
+      await showCustomDialog(
+        context: context,
+        icon: Icons.check_circle,
+        color: Colors.green,
+        title: "Registrasi Berhasil",
+        subtitle: "Silakan login dengan akun Anda");
       setState(() {
         isLogin = true;
       });
 
     } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
       print("ERROR REGISTER: $e");
-
       String message = "Register gagal";
-
       if (e.toString().contains('email-already-in-use')) {
         message = "Email sudah terdaftar, silakan login";
       }
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(message)),
-      );
+      await showCustomDialog(
+        context: context,
+        icon: Icons.error,
+        color: Colors.red,
+        title: "Registrasi Gagal",
+        subtitle: message);
     }
   }
 @override
@@ -228,11 +256,23 @@ Widget build(BuildContext context) {
                   /// PASSWORD
                   TextField(
                     controller: password,
-                    obscureText: true,
+                    obscureText: !showPassword,
                     decoration: InputDecoration(
                       labelText: "Password",
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          showPassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            showPassword = !showPassword;
+                          });
+                        },
                       ),
                     ),
                   ),
@@ -244,11 +284,23 @@ Widget build(BuildContext context) {
                   if (!isLogin)
                     TextField(
                       controller: confirmPassword,
-                      obscureText: true,
+                      obscureText: !showConfirmPassword,
                       decoration: InputDecoration(
                         labelText: "Konfirmasi Password",
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            showConfirmPassword
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              showConfirmPassword = !showConfirmPassword;
+                            });
+                          },
                         ),
                       ),
                     ),
@@ -266,23 +318,34 @@ Widget build(BuildContext context) {
                           borderRadius: BorderRadius.circular(30),
                         ),
                       ),
-                      onPressed: () {
+                      onPressed: isLoading
+                      ? null
+                      :() {
                         if (isLogin) {
                           login();
                         } else {
                           register();
                         }
                       },
-                      child: Text(
-                        isLogin ? "Masuk" : "Daftar",
+                      child: isLoading
+                      ?SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
+                      :Text(
+                        isLogin ? "Login" : "Register",
                         style: TextStyle(
                           fontSize: 18,
-                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                   ),
-                ],
+                ]
               ),
             ),
           ),

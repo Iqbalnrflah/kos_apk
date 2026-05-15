@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'home_content.dart';
 import 'tagihan_penghuni.dart';
 import 'daftar_penghuni.dart';
+import 'notif_penghuni.dart';
 
 class HomePenghuni extends StatefulWidget {
   @override
@@ -15,7 +16,7 @@ class _HomePenghuniState extends State<HomePenghuni> {
     HomeContent(),
     TagihanPenghuniPage(),
     DaftarPenghuniPage(),
-    Center(child: Text("Notif")),
+    NotifPenghuniPage(),
   ];
 
   @override

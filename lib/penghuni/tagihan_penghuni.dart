@@ -148,7 +148,8 @@ class TagihanPenghuniPage extends StatelessWidget {
                   var item =
                       doc.data() as Map<String, dynamic>;
 
-                  return item['penghuniId'] == uid;
+                  return item['penghuniId'] == uid &&
+                  item['status_pembayaran'] != "Lunas";
 
                 }).toList();
 

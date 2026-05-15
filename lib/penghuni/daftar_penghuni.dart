@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../widgets/header.dart';
 
 class DaftarPenghuniPage extends StatelessWidget {
   @override
@@ -55,6 +56,7 @@ class DaftarPenghuniPage extends StatelessWidget {
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              CustomHeader(title: "Daftar Pembayaran"),
               Text(waktu),
               SizedBox(height: 5),
               Container(
