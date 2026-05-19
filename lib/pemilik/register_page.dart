@@ -136,50 +136,45 @@ class AuthPageState extends State<AuthPage> {
     }
   }
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    backgroundColor: Colors.white,
-
-    body: SafeArea(
-      child: Column(
-        children: [
-
-          /// ===============================
-          /// FORM LOGIN / REGISTER
-          /// ===============================
-          Expanded(
-            child: AnimatedContainer(
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(child: Center(
+              child: Image.asset(
+                "assets/img/LogoPay.png",
+                width: 150,
+                height: 150,
+                fit: BoxFit.contain,
+              ),
+            )),
+            AnimatedContainer(
               duration: Duration(milliseconds: 300),
               curve: Curves.easeInOut,
+              height: isLogin ? 430 : 620,
               width: double.infinity,
-
               padding: EdgeInsets.all(20),
-
               decoration: BoxDecoration(
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(35),
+                  top: Radius.circular(30),
                 ),
               ),
-
               child: SingleChildScrollView(
                 child: Column(
                   children: [
-
-                    /// LOGIN REGISTER TAB
                     Row(
                       mainAxisAlignment:
                           MainAxisAlignment.center,
                       children: [
-
-                        /// LOGIN
                         GestureDetector(
                           onTap: () {
                             setState(() {
                               isLogin = true;
                             });
                           },
-
                           child: Column(
                             children: [
                               Text(
@@ -193,15 +188,12 @@ Widget build(BuildContext context) {
                                       FontWeight.bold,
                                 ),
                               ),
-
                               SizedBox(height: 5),
-
                               AnimatedContainer(
                                 duration:
                                     Duration(milliseconds: 300),
                                 width: isLogin ? 60 : 0,
                                 height: 3,
-
                                 decoration: BoxDecoration(
                                   color: Color(0xFF9E182B),
                                   borderRadius:
@@ -211,17 +203,13 @@ Widget build(BuildContext context) {
                             ],
                           ),
                         ),
-
                         SizedBox(width: 40),
-
-                        /// REGISTER
                         GestureDetector(
                           onTap: () {
                             setState(() {
                               isLogin = false;
                             });
                           },
-
                           child: Column(
                             children: [
                               Text(
@@ -235,15 +223,12 @@ Widget build(BuildContext context) {
                                       FontWeight.bold,
                                 ),
                               ),
-
                               SizedBox(height: 5),
-
                               AnimatedContainer(
                                 duration:
                                     Duration(milliseconds: 300),
                                 width: !isLogin ? 90 : 0,
                                 height: 3,
-
                                 decoration: BoxDecoration(
                                   color: Color(0xFF9E182B),
                                   borderRadius:
@@ -255,10 +240,7 @@ Widget build(BuildContext context) {
                         ),
                       ],
                     ),
-
                     SizedBox(height: 25),
-
-                    /// ROLE BUTTON
                     Row(
                       mainAxisAlignment:
                           MainAxisAlignment.center,
@@ -268,10 +250,7 @@ Widget build(BuildContext context) {
                         _roleButton("pemilik"),
                       ],
                     ),
-
                     SizedBox(height: 25),
-
-                    /// NAMA
                     if (!isLogin)
                       TextField(
                         controller: nama,
@@ -283,11 +262,8 @@ Widget build(BuildContext context) {
                           ),
                         ),
                       ),
-
                     if (!isLogin)
                       SizedBox(height: 15),
-
-                    /// PHONE
                     if (!isLogin)
                       TextField(
                         controller: phone,
@@ -299,11 +275,8 @@ Widget build(BuildContext context) {
                           ),
                         ),
                       ),
-
                     if (!isLogin)
                       SizedBox(height: 15),
-
-                    /// EMAIL
                     TextField(
                       controller: email,
                       decoration: InputDecoration(
@@ -314,29 +287,22 @@ Widget build(BuildContext context) {
                         ),
                       ),
                     ),
-
                     SizedBox(height: 15),
-
-                    /// PASSWORD
                     TextField(
                       controller: password,
                       obscureText: !showPassword,
-
                       decoration: InputDecoration(
                         labelText: "Password",
-
                         border: OutlineInputBorder(
                           borderRadius:
                               BorderRadius.circular(12),
                         ),
-
                         suffixIcon: IconButton(
                           icon: Icon(
                             showPassword
                                 ? Icons.visibility
                                 : Icons.visibility_off,
                           ),
-
                           onPressed: () {
                             setState(() {
                               showPassword =
@@ -346,33 +312,26 @@ Widget build(BuildContext context) {
                         ),
                       ),
                     ),
-
-                    /// CONFIRM PASSWORD
                     if (!isLogin)
                       SizedBox(height: 15),
-
                     if (!isLogin)
                       TextField(
                         controller: confirmPassword,
                         obscureText:
                             !showConfirmPassword,
-
                         decoration: InputDecoration(
                           labelText:
                               "Konfirmasi Password",
-
                           border: OutlineInputBorder(
                             borderRadius:
                                 BorderRadius.circular(12),
                           ),
-
                           suffixIcon: IconButton(
                             icon: Icon(
                               showConfirmPassword
                                   ? Icons.visibility
                                   : Icons.visibility_off,
                             ),
-
                             onPressed: () {
                               setState(() {
                                 showConfirmPassword =
@@ -382,27 +341,21 @@ Widget build(BuildContext context) {
                           ),
                         ),
                       ),
-
                     SizedBox(height: 35),
-
-                    /// BUTTON LOGIN REGISTER
                     SizedBox(
                       width: 220,
                       height: 55,
-
                       child: ElevatedButton(
                         style:
                             ElevatedButton.styleFrom(
                           backgroundColor:
                               Color(0xFF9E182B),
-
                           shape:
                               RoundedRectangleBorder(
                             borderRadius:
                                 BorderRadius.circular(30),
                           ),
                         ),
-
                         onPressed: isLoading
                             ? null
                             : () {
@@ -412,12 +365,10 @@ Widget build(BuildContext context) {
                                   register();
                                 }
                               },
-
                         child: isLoading
                             ? SizedBox(
                                 width: 24,
                                 height: 24,
-
                                 child:
                                     CircularProgressIndicator(
                                   color: Colors.white,
@@ -428,7 +379,6 @@ Widget build(BuildContext context) {
                                 isLogin
                                     ? "Login"
                                     : "Register",
-
                                 style: TextStyle(
                                   fontSize: 18,
                                   fontWeight:
@@ -441,12 +391,11 @@ Widget build(BuildContext context) {
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   Widget _roleButton(String value) {
     bool selected = role == value;

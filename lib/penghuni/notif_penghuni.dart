@@ -82,7 +82,6 @@ class NotifPenghuniPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-
       body: Column(
         children: [
           CustomHeader(title: "Notifikasi"),
@@ -95,9 +94,7 @@ class NotifPenghuniPage extends StatelessWidget {
                     descending: true,
                   )
                   .snapshots(),
-
               builder: (context, snapshot) {
-
                 if (snapshot.connectionState ==
                     ConnectionState.waiting) {
                   return const Center(
@@ -105,7 +102,6 @@ class NotifPenghuniPage extends StatelessWidget {
                         CircularProgressIndicator(),
                   );
                 }
-
                 if (!snapshot.hasData ||
                     snapshot.data!.docs.isEmpty) {
                   return const Center(
@@ -114,54 +110,44 @@ class NotifPenghuniPage extends StatelessWidget {
                     ),
                   );
                 }
-
                 var data = snapshot.data!.docs;
-
                 return ListView.builder(
+                  padding: EdgeInsets.only(top: 0),
                   itemCount: data.length,
-
                   itemBuilder: (context, index) {
-
                     var item =
                         data[index].data()
                             as Map<String, dynamic>;
-
                     String nama =
                         item['penghuni_nama'] ??
                             "-";
-
                     String metode =
                         item['metode'] ?? "-";
-
                     int jumlah =
                         item['jumlah_bayar'] ?? 0;
-
                     Timestamp? waktu =
                         item['tanggal_bayar'];
-
                     DateTime date =
                         waktu != null
                             ? waktu.toDate()
                             : DateTime.now();
-
                     String tanggal =
                         "${date.day.toString().padLeft(2, '0')}/"
                         "${date.month.toString().padLeft(2, '0')}/"
                         "${date.year} • "
                         "${date.hour.toString().padLeft(2, '0')}:"
                         "${date.minute.toString().padLeft(2, '0')}";
-
                     return Container(
                       margin:
-                          const EdgeInsets.symmetric(
-                        horizontal: 16,
+                          EdgeInsets.only(
+                            left: 16,
+                            right: 16,
+                            top: index == 0 ? 4 : 0,
                       ),
-
                       padding:
                           const EdgeInsets.symmetric(
                         vertical: 16,
                       ),
-
                       decoration:
                           const BoxDecoration(
                         border: Border(
@@ -170,42 +156,32 @@ class NotifPenghuniPage extends StatelessWidget {
                           ),
                         ),
                       ),
-
                       child: Column(
                         crossAxisAlignment:
                             CrossAxisAlignment
                                 .start,
-
                         children: [
-
-                          /// JUDUL + TANGGAL
                           Row(
                             mainAxisAlignment:
                                 MainAxisAlignment
                                     .spaceBetween,
-
                             crossAxisAlignment:
                                 CrossAxisAlignment
                                     .start,
-
                             children: [
-
                               const Expanded(
                                 child: Text(
                                   "Konfirmasi Pembayaran Berhasil",
                                   style: TextStyle(
                                     fontWeight:
-                                        FontWeight
-                                            .bold,
-                                    fontSize: 16,
+                                        FontWeight.w600,
+                                    fontSize: 14,
                                   ),
                                 ),
                               ),
-
                               const SizedBox(
                                 width: 10,
                               ),
-
                               Text(
                                 tanggal,
                                 style:
@@ -217,31 +193,23 @@ class NotifPenghuniPage extends StatelessWidget {
                               ),
                             ],
                           ),
-
                           const SizedBox(
                             height: 10,
                           ),
-
-                          /// NAMA
                           Text(
                             nama,
                             style: const TextStyle(
                               fontSize: 15,
                             ),
                           ),
-
                           const SizedBox(
                             height: 6,
                           ),
-
-                          /// METODE + JUMLAH
                           Row(
                             mainAxisAlignment:
                                 MainAxisAlignment
                                     .spaceBetween,
-
                             children: [
-
                               Text(
                                 metode,
                                 style:
@@ -251,15 +219,13 @@ class NotifPenghuniPage extends StatelessWidget {
                                   fontSize: 14,
                                 ),
                               ),
-
                               Text(
                                 "Rp.$jumlah",
                                 style:
                                     const TextStyle(
                                   fontWeight:
-                                      FontWeight
-                                          .bold,
-                                  fontSize: 20,
+                                      FontWeight.w600,
+                                  fontSize: 16,
                                 ),
                               ),
                             ],

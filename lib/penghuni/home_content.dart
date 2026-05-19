@@ -80,6 +80,7 @@ class _HomeContentState extends State<HomeContent> {
                 }
 
                 return ListView.builder(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   itemCount: filteredData.length,
                   itemBuilder: (context, index) {
 
@@ -100,8 +101,9 @@ class _HomeContentState extends State<HomeContent> {
                       },
 
                       child: Container(
-                        margin: EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
+                        margin: EdgeInsets.only(
+                          bottom: 0,
+                        ),
                         padding: EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: Color (0xFF9E182B),

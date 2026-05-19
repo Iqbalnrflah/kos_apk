@@ -44,6 +44,7 @@ dependencies:
   image_picker: ^1.2.1
   url_launcher: ^6.1.7
   webview_flutter: ^4.13.1
+  google_fonts: ^8.1.0
 
 dev_dependencies:
   flutter_test:
@@ -66,6 +67,10 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+  fonts:
+    - family: Domine
+      fonts:
+        - asset: assets/fonts/Domine-Regular.ttf
   assets:
       - assets/img/
   # To add assets to your application, add an assets section, like this:

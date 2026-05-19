@@ -26,6 +26,7 @@ class DaftarPenghuniPage extends StatelessWidget {
                   return Center(child: Text("Belum ada pembayaran"));
                 }
                 return ListView.builder(
+                  padding: EdgeInsets.only(top: 0),
                   itemCount: docs.length,
                   itemBuilder: (context, index) {           
                     final item = docs[index].data() as Map<String, dynamic>;

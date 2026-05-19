@@ -13,41 +13,29 @@ class EditProfilPenghuniPage extends StatefulWidget {
   State<EditProfilPenghuniPage> createState() =>
       _EditProfilPenghuniPageState();
 }
-
 class _EditProfilPenghuniPageState
     extends State<EditProfilPenghuniPage> {
-
-  File? _image;
-
-  String? imageBase64;
-  String? imageUrl;
-
-  bool isLoading = false;
-
-  final picker = ImagePicker();
-
-  final namaController = TextEditingController();
-  final telpController = TextEditingController();
-
-  User? user = FirebaseAuth.instance.currentUser;
-
+    File? _image;
+    String? imageBase64;
+    String? imageUrl;
+    bool isLoading = false;
+    final picker = ImagePicker();
+    final namaController = TextEditingController();
+    final telpController = TextEditingController();
+    User? user = FirebaseAuth.instance.currentUser;
   @override
   void initState() {
     super.initState();
     loadProfile();
   }
-
-  /// LOAD PROFILE
   Future<void> loadProfile() async {
     try {
       var doc = await FirebaseFirestore.instance
           .collection('users')
           .doc(user!.uid)
           .get();
-
       if (doc.exists) {
         var data = doc.data();
-
         setState(() {
           namaController.text = data?['nama'] ?? '';
           telpController.text = data?['telp'] ?? '';
@@ -55,23 +43,18 @@ class _EditProfilPenghuniPageState
         });
       }
     } catch (e) {
-      print("LOAD ERROR: $e");
+      print("ERROR LOAD PROFILE: $e");
     }
   }
-
-  /// PICK IMAGE
   Future<void> pickImage() async {
     final pickedFile = await picker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 40,
     );
-
     if (pickedFile != null) {
       File imageFile = File(pickedFile.path);
-
       String base64 =
           base64Encode(imageFile.readAsBytesSync());
-
       setState(() {
         _image = imageFile;
         imageBase64 = base64;
@@ -79,17 +62,13 @@ class _EditProfilPenghuniPageState
     }
   }
 
-  /// SAVE PROFILE
   Future<void> saveProfile() async {
     setState(() => isLoading = true);
-
     try {
       String? photoData = imageBase64;
-
       if (photoData == null || photoData.isEmpty) {
         photoData = imageUrl;
       }
-
       await FirebaseFirestore.instance
           .collection('users')
           .doc(user!.uid)
@@ -99,37 +78,28 @@ class _EditProfilPenghuniPageState
         'email': user!.email,
         'photo': photoData ?? '',
       }, SetOptions(merge: true));
-
       setState(() {
         imageUrl = photoData;
         _image = null;
       });
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Profil berhasil disimpan"),
         ),
       );
-
     } catch (e) {
       print("ERROR SAVE: $e");
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Gagal simpan profil"),
         ),
       );
     }
-
     setState(() => isLoading = false);
   }
-
-  /// LOGOUT
   Future<void> handleLogout() async {
     await FirebaseAuth.instance.signOut();
-
     if (!mounted) return;
-
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(
@@ -138,8 +108,6 @@ class _EditProfilPenghuniPageState
       (route) => false,
     );
   }
-
-  /// PROFILE IMAGE
   Widget buildProfileImage() {
     if (_image != null) {
       return CircleAvatar(
@@ -147,7 +115,6 @@ class _EditProfilPenghuniPageState
         backgroundImage: FileImage(_image!),
       );
     }
-
     if (imageUrl != null && imageUrl!.isNotEmpty) {
       return CircleAvatar(
         radius: 60,
@@ -155,7 +122,6 @@ class _EditProfilPenghuniPageState
             MemoryImage(base64Decode(imageUrl!)),
       );
     }
-
     return const CircleAvatar(
       radius: 60,
       child: Icon(
@@ -165,7 +131,6 @@ class _EditProfilPenghuniPageState
     );
   }
 
-  /// TEXTFIELD
   Widget buildTextField({
     required String label,
     required TextEditingController controller,
@@ -189,7 +154,6 @@ class _EditProfilPenghuniPageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: const Text(
           "Edit Profil",
