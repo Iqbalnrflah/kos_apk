@@ -186,22 +186,18 @@ class _EditProfilPenghuniPageState
       ),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[200],
-
       appBar: AppBar(
-        backgroundColor: Color(0xFF9E182B),
         title: const Text(
           "Edit Profil",
           style: TextStyle(
-            color: Colors.white,
+            color: Colors.black,
           ),
         ),
         centerTitle: true,
-
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -209,51 +205,35 @@ class _EditProfilPenghuniPageState
           )
         ],
       ),
-
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(20),
-
           child: Column(
             children: [
-
               const SizedBox(height: 20),
-
-              /// FOTO
               GestureDetector(
                 onTap: pickImage,
                 child: buildProfileImage(),
               ),
-
               const SizedBox(height: 15),
-
               const Text(
                 "Tekan foto untuk mengganti",
                 style: TextStyle(
                   color: Colors.grey,
                 ),
               ),
-
               const SizedBox(height: 30),
-
-              /// NAMA
               buildTextField(
                 label: "Nama",
                 controller: namaController,
               ),
-
               const SizedBox(height: 15),
-
-              /// TELP
               buildTextField(
                 label: "No Telp",
                 controller: telpController,
                 keyboard: TextInputType.phone,
               ),
-
               const SizedBox(height: 15),
-
-              /// EMAIL
               buildTextField(
                 label: "Email",
                 controller: TextEditingController(
@@ -261,13 +241,9 @@ class _EditProfilPenghuniPageState
                 ),
                 readOnly: true,
               ),
-
               const SizedBox(height: 30),
-
-              /// BUTTON SIMPAN
               SizedBox(
                 width: double.infinity,
-
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Color(0xFF9E182B),
@@ -275,16 +251,13 @@ class _EditProfilPenghuniPageState
                         const EdgeInsets.symmetric(
                       vertical: 15,
                     ),
-
                     shape: RoundedRectangleBorder(
                       borderRadius:
                           BorderRadius.circular(12),
                     ),
                   ),
-
                   onPressed:
                       isLoading ? null : saveProfile,
-
                   child: isLoading
                       ? const CircularProgressIndicator(
                           color: Colors.white,

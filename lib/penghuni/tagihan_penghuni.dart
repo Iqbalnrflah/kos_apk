@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:convert';
 import 'detail_tagihan.dart';
 import 'propil_penghuni.dart';
+import '../widgets/header.dart';
 
 class TagihanPenghuniPage extends StatelessWidget {
 
@@ -45,16 +45,6 @@ class TagihanPenghuniPage extends StatelessWidget {
               ),
             );
           },
-          child: CircleAvatar(
-            radius: 18,
-            backgroundColor: Color(0xFF9E182B),
-            backgroundImage: (photo != null && photo.isNotEmpty)
-                ? MemoryImage(base64Decode(photo))
-                : null,
-            child: (photo == null || photo.isEmpty)
-                ? Icon(Icons.person, color: Colors.white)
-                : null,
-          ),
         );
       },
     );
@@ -77,49 +67,7 @@ class TagihanPenghuniPage extends StatelessWidget {
 
       body: Column(
         children: [
-        
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.only(
-              top: 65,
-              left: 12,
-              right: 12,
-              bottom: 10,
-            ),
-            color: Colors.white,
-
-            child: Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
-              children: [
-              
-                SizedBox(),
-
-                buildProfileIcon(context),
-              ],
-            ),
-          ),
-
-          /// BAGIAN MERAH
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(
-              vertical: 14,
-            ),
-            color: Color(0xFF9E182B),
-
-            child: Center(
-              child: Text(
-                "Tagihan Bulanan",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-
+          CustomHeader(title: "Detail Tagihan"),
           /// LIST
           Expanded(
             child: StreamBuilder<QuerySnapshot>(

@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'midtrans_webview.dart';
 import '../widgets/success_dialog.dart';
-import '../widgets/header.dart';
 
 class DetailTagihanPage extends StatefulWidget {
   final Map<String, dynamic> data;
@@ -94,6 +93,7 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
             'status_pembayaran': 'Lunas',
           });
           await showSuccessDialog(context);
+
           Navigator.pushReplacementNamed(
             context,
             "/daftar_penghuni",
@@ -153,7 +153,7 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
         padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
-            CustomHeader(title: "Detail Tagihan"),
+
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(

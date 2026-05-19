@@ -1,10 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:convert';
 import 'kamar_penghuni.dart';
-import 'propil_penghuni.dart';
 import '../widgets/header.dart';
 
 class HomeContent extends StatefulWidget {
@@ -16,8 +13,7 @@ class _HomeContentState extends State<HomeContent> {
   String search = "";
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Column(
+    return Column(
         children: [
           CustomHeader(title: "Beranda"),
           Padding(
@@ -145,7 +141,6 @@ class _HomeContentState extends State<HomeContent> {
             ),
           ),
         ],
-      ),
-    );
+      );
   }
 }

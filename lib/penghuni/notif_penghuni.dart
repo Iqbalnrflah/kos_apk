@@ -86,49 +86,6 @@ class NotifPenghuniPage extends StatelessWidget {
       body: Column(
         children: [
           CustomHeader(title: "Notifikasi"),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.only(
-              top: 65,
-              left: 16,
-              right: 16,
-              bottom: 12,
-            ),
-            color: Colors.white,
-
-            child: Row(
-              mainAxisAlignment:
-                  MainAxisAlignment.spaceBetween,
-
-              children: [
-                const SizedBox(width: 26,),
-                buildProfileIcon(context),
-              ],
-            ),
-          ),
-
-          /// TITLE MERAH
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(
-              vertical: 14,
-            ),
-
-            color: const Color(0xFF9E182B),
-
-            child: const Center(
-              child: Text(
-                "Notifikasi",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-
-          /// LIST NOTIFIKASI
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance

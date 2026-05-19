@@ -141,65 +141,60 @@ Widget build(BuildContext context) {
       child: Column(
         children: [
           SizedBox(height: 50),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              GestureDetector(
-                onTap: () => setState(() => isLogin = true),
-                child: Text(
-                  "Login",
-                  style: TextStyle(
-                    color: isLogin ? Colors.black : Colors.grey,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+          Padding(
+            padding: EdgeInsets.only(
+              top: 40,
+              bottom: 20,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                GestureDetector(
+                  onTap: () => setState(() => isLogin = true),
+                  child: Text(
+                    "Login",
+                    style: TextStyle(
+                      color: isLogin ? Colors.black : Colors.grey,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
 
-              SizedBox(width: 30),
+                SizedBox(width: 30),
 
-              GestureDetector(
-                onTap: () => setState(() => isLogin = false),
-                child: Text(
-                  "Registrasi",
-                  style: TextStyle(
-                    color: !isLogin ? Colors.black : Colors.grey,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                GestureDetector(
+                  onTap: () => setState(() => isLogin = false),
+                  child: Text(
+                    "Registrasi",
+                    style: TextStyle(
+                      color: !isLogin ? Colors.black : Colors.grey,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-
-          /// BIAR FORM NEMPEL BAWAH
           Expanded(
             child: Container(),
           ),
-
-          /// FORM LOGIN / REGISTER
           AnimatedContainer(
             duration: Duration(milliseconds: 300),
             curve: Curves.easeInOut,
-
             height: isLogin ? 360 : 520,
             width: double.infinity,
-
             padding: EdgeInsets.all(20),
-
             decoration: BoxDecoration(
               color: Colors.grey[200],
               borderRadius: BorderRadius.vertical(
                 top: Radius.circular(30),
               ),
             ),
-
             child: SingleChildScrollView(
               child: Column(
                 children: [
-
-                  /// ROLE
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -208,10 +203,7 @@ Widget build(BuildContext context) {
                       _roleButton("pemilik"),
                     ],
                   ),
-
                   SizedBox(height: 25),
-
-                  /// REGISTER ONLY
                   if (!isLogin)
                     TextField(
                       controller: nama,
@@ -222,10 +214,8 @@ Widget build(BuildContext context) {
                         ),
                       ),
                     ),
-
                   if (!isLogin)
                     SizedBox(height: 15),
-
                   if (!isLogin)
                     TextField(
                       controller: phone,
@@ -236,11 +226,8 @@ Widget build(BuildContext context) {
                         ),
                       ),
                     ),
-
                   if (!isLogin)
                     SizedBox(height: 15),
-
-                  /// EMAIL
                   TextField(
                     controller: email,
                     decoration: InputDecoration(
@@ -250,10 +237,7 @@ Widget build(BuildContext context) {
                       ),
                     ),
                   ),
-
                   SizedBox(height: 15),
-
-                  /// PASSWORD
                   TextField(
                     controller: password,
                     obscureText: !showPassword,
@@ -277,10 +261,8 @@ Widget build(BuildContext context) {
                     ),
                   ),
 
-                  /// KONFIRMASI PASSWORD
                   if (!isLogin)
                     SizedBox(height: 15),
-
                   if (!isLogin)
                     TextField(
                       controller: confirmPassword,

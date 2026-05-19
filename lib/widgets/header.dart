@@ -18,12 +18,10 @@ class CustomHeader extends StatelessWidget {
 
     return Column(
       children: [
-
-        /// ATAS PUTIH
         Container(
           width: double.infinity,
           padding: const EdgeInsets.only(
-            top: 65,
+            top: 60,
             left: 16,
             right: 16,
             bottom: 12,
