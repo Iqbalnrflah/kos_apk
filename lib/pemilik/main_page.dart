@@ -8,105 +8,127 @@ import 'profil_page.dart';
 
 class MainPage extends StatefulWidget {
   @override
-  _MainPageState createState() => _MainPageState();
+  State<MainPage> createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
   int index = 0;
-
   final pages = [
     HomePage(),
     PembayaranPage(),
     NotifPage(),
     RiwayatPage(),
   ];
-
   void changeTab(int i) {
     setState(() {
       index = i;
     });
   }
+  Widget navItem(
+  IconData icon,
+  String label,
+  int i,
+) {
 
-  /// 🔥 ICON BESAR
-  Widget navItem(IconData icon, int i) {
-    bool active = index == i;
+  bool active = index == i;
 
-    return GestureDetector(
-      onTap: () => changeTab(i),
-      child: Icon(
-        icon,
-        size: 30,
-        color: active ? Colors.white : Colors.white70,
-      ),
-    );
-  }
+  return GestureDetector(
+    onTap: () => changeTab(i),
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-        actions: [
-          IconButton(
-            icon: Icon(Icons.person),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => ProfilPage()),
-              );
-            },
-          )
-        ],
-      ),
+    child: Container(
+      width: 55,
+      padding: EdgeInsets.symmetric(vertical: 8),
 
-      body: pages[index],
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
 
-      /// 🔥 FAB NORMAL (jangan mini)
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => TambahKamarPage()),
-          );
-        },
-        backgroundColor: Color(0xFF9E182B),
-        elevation: 6,
-        child: Icon(Icons.add, size: 30),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-
-      /// 🔥 NAVBAR MINI TAPI ICON BESAR
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Color(0xFF9E182B),
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(18),
-            topRight: Radius.circular(18),
+          Icon(
+            icon,
+            size: 28,
+            color:
+                active
+                    ? Colors.white
+                    : Colors.white70,
           ),
-        ),
-        child: BottomAppBar(
-          color: Colors.transparent,
-          elevation: 0,
-          shape: CircularNotchedRectangle(),
-          notchMargin: 6,
-          child: SizedBox(
-            height: 60,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
 
-                navItem(Icons.home, 0),
-                navItem(Icons.receipt_long, 1),
+          SizedBox(height: 6),
 
-                SizedBox(width: 10),
+          AnimatedContainer(
+            duration: Duration(milliseconds: 250),
+            curve: Curves.easeInOut,
 
-                navItem(Icons.notifications, 2),
-                navItem(Icons.history, 3),
-              ],
+            width: active ? 22 : 0,
+            height: 3,
+
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
             ),
           ),
+        ],
+      ),
+    ),
+  );
+}
+
+@override
+Widget build(BuildContext context) {
+  return Scaffold(
+    body: pages[index],
+
+    floatingActionButton: FloatingActionButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => TambahKamarPage(),
+          ),
+        );
+      },
+      backgroundColor: Color(0xFF9E182B),
+      elevation: 6,
+      child: Icon(
+        Icons.add,
+        size: 30,
+        color: Colors.white,
+      ),
+    ),
+
+    floatingActionButtonLocation:
+        FloatingActionButtonLocation.centerDocked,
+
+    bottomNavigationBar: Container(
+      height: 101,
+      decoration: BoxDecoration(
+        color: Color(0xFF9E182B),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(15),
+          topRight: Radius.circular(15),
         ),
       ),
-    );
-  }
+
+      child: BottomAppBar(
+        color: Colors.transparent,
+        elevation: 0,
+        shape: CircularNotchedRectangle(),
+        notchMargin: 8,
+
+        child: Row(
+          mainAxisAlignment:
+              MainAxisAlignment.spaceAround,
+
+          children: [
+            navItem(Icons.home, "Home", 0),
+            navItem(Icons.receipt_long, "Tagihan", 1),
+
+            SizedBox(width: 40),
+            navItem(Icons.notifications, "Notif", 2),
+            navItem(Icons.history, "Riwayat", 3),
+          ],
+        ),
+      ),
+    ),
+  );
+}
 }

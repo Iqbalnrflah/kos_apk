@@ -381,6 +381,7 @@ class AuthPageState extends State<AuthPage> {
                                     : "Register",
                                 style: TextStyle(
                                   fontSize: 18,
+                                  color: Colors.white,
                                   fontWeight:
                                       FontWeight.bold,
                                 ),

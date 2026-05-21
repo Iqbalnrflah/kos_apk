@@ -8,29 +8,21 @@ class MidtransWebView extends StatefulWidget {
     super.key,
     required this.url,
   });
-
   @override
   State<MidtransWebView> createState() => _MidtransWebViewState();
 }
-
 class _MidtransWebViewState extends State<MidtransWebView> {
   late final WebViewController controller;
-
   bool sudahClose = false;
-
   @override
   void initState() {
     super.initState();
-
     controller = WebViewController()
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setNavigationDelegate(
         NavigationDelegate(
-
           onPageStarted: (url) {
             print("URL: $url");
-
-            /// SUCCESS
             if (!sudahClose &&
                 (
                   url.contains("finish") ||
@@ -39,9 +31,7 @@ class _MidtransWebViewState extends State<MidtransWebView> {
                   url.contains("capture") ||
                   url.contains("status_code=200")
                 )) {
-
               sudahClose = true;
-
               Future.delayed(
                 const Duration(seconds: 1),
                 () {
@@ -49,21 +39,16 @@ class _MidtransWebViewState extends State<MidtransWebView> {
                 },
               );
             }
-
-            /// CANCEL / FAILED
             if (!sudahClose &&
                 (
                   url.contains("cancel") ||
                   url.contains("deny") ||
                   url.contains("expire")
                 )) {
-
               sudahClose = true;
-
               Navigator.pop(context, false);
             }
           },
-
           onNavigationRequest: (request) {
             return NavigationDecision.navigate;
           },
@@ -81,6 +66,7 @@ class _MidtransWebViewState extends State<MidtransWebView> {
       body: WebViewWidget(
         controller: controller,
       ),
+      
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../widgets/header.dart';
 
 class NotifPage extends StatelessWidget {
   @override
@@ -7,21 +8,7 @@ class NotifPage extends StatelessWidget {
     return Scaffold(
       body: Column(
         children: [
-          Container(
-            width: double.infinity,
-            padding: EdgeInsets.symmetric(vertical: 15),
-            color: Color(0xFF9E182B),
-            child: Center(
-              child: Text(
-                "Notifikasi",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
+          CustomHeader(title: "Notifikasi"),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance

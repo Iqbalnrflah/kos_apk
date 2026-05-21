@@ -125,8 +125,6 @@ class DetailPenghuniPage extends StatelessWidget {
                           ),
 
                           SizedBox(height: 20),
-
-                          /// 🔥 BUTTON KOSONGKAN
                           ElevatedButton(
                             onPressed: () => kosongkanKamar(context),
                             style: ElevatedButton.styleFrom(
@@ -151,7 +149,6 @@ class DetailPenghuniPage extends StatelessWidget {
     );
   }
 
-  /// 🔥 FIELD DI DALAM BOX (NESTED BOX)
   Widget buildItem(String title, dynamic value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
@@ -159,7 +156,7 @@ class DetailPenghuniPage extends StatelessWidget {
         padding: EdgeInsets.all(10),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(10), // 🔥 radius dalam
+          borderRadius: BorderRadius.circular(10),
           border: Border.all(color: Colors.black26),
         ),
         child: Row(

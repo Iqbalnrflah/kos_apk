@@ -57,7 +57,7 @@ class _IsiKamarState extends State<IsiKamar> {
         .set({
       'penghuni_nama': nama.text,
       'penghuni_phone': phone.text,
-      'penghuniId': user!.uid,
+      'userId': user!.uid,
       'kosId': widget.kosId,
       'status': 'terisi',
       'No_Kamar': noKamar,

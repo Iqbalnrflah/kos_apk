@@ -4,7 +4,6 @@ import 'detail_penghuni.dart';
 
 class DetailKosPage extends StatelessWidget {
   final String kosId;
-
   DetailKosPage({required this.kosId});
 
   @override
@@ -13,7 +12,6 @@ class DetailKosPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(""),
       ),
-
       body: Column(
         children: [
           StreamBuilder<DocumentSnapshot>(
@@ -26,21 +24,19 @@ class DetailKosPage extends StatelessWidget {
               var data = snapshot.data!.data() as Map<String, dynamic>;
               String alamat = data['alamat'] ?? "-";
               return Container(
-                margin: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 padding: EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                 decoration: BoxDecoration(
                   color: Color(0xFF9E182B),
-                  borderRadius: BorderRadius.circular(10), // 🔥 biar ga full kotak
                 ),
-                child: Center( // 🔥 bikin teks di tengah
+                child: Center(
                   child: Text(
                     alamat,
-                    textAlign: TextAlign.center, // 🔥 center text
+                    textAlign: TextAlign.center,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 14, // 🔥 diperbesar
+                      fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
@@ -56,13 +52,10 @@ class DetailKosPage extends StatelessWidget {
                   .collection('kamar')
                   .snapshots(),
               builder: (context, snapshot) {
-
                 if (!snapshot.hasData) {
                   return Center(child: CircularProgressIndicator());
                 }
-
                 var kamar = snapshot.data!.docs;
-
                 return GridView.builder(
                   padding: EdgeInsets.all(16),
                   itemCount: kamar.length,
@@ -73,19 +66,15 @@ class DetailKosPage extends StatelessWidget {
                   ),
                   itemBuilder: (context, index) {
                     var item = kamar[index].data() as Map<String, dynamic>;
-
                     String nama = item['No_Kamar']?.toString() ?? "-";
                     String status = item['status'] ?? "";
-
                     String huruf;
                     if (nama.contains("Kamar ")) {
                       huruf = nama.replaceAll("Kamar ", "");
                     } else {
                       huruf = nama;
                     }
-
                     bool isTerisi = status == "terisi";
-
                     return GestureDetector(
                       onTap: isTerisi
                           ? () {

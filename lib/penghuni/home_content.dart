@@ -102,7 +102,7 @@ class _HomeContentState extends State<HomeContent> {
 
                       child: Container(
                         margin: EdgeInsets.only(
-                          bottom: 0,
+                          bottom: 10,
                         ),
                         padding: EdgeInsets.all(16),
                         decoration: BoxDecoration(

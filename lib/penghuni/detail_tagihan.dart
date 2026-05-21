@@ -93,20 +93,14 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
             'status_pembayaran': 'Lunas',
           });
           await showSuccessDialog(context);
-
-          Navigator.pushReplacementNamed(
-            context,
-            "/daftar_penghuni",
-          );
+          Navigator.pop(context,true);
         } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Pembayaran dibatalkan")),
         );
       }
-
     } catch (e) {
       print("ERROR: $e");
-
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Error: $e")),
       );
@@ -134,16 +128,12 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
   @override
   Widget build(BuildContext context) {
     var data = widget.data;
-
     String nama = data['penghuni_nama'] ?? "-";
     String phone = data['penghuni_phone'] ?? "-";
-
     DateTime tgl = (data['tanggal_masuk'] is Timestamp)
         ? (data['tanggal_masuk'] as Timestamp).toDate()
         : DateTime.now();
-
     String jatuhTempo = "${tgl.day}/${tgl.month}/${tgl.year}";
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("Detail Tagihan"),
@@ -153,7 +143,6 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
         padding: const EdgeInsets.all(16),
         child: ListView(
           children: [
-
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -202,30 +191,7 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
                 ],
               ),
             ),
-
             const SizedBox(height: 20),
-
-            /// METODE
-            DropdownButtonFormField<String>(
-              value: metode,
-              items: ["Transfer", "Cash", "E-Wallet"]
-                  .map((e) => DropdownMenuItem(
-                        value: e,
-                        child: Text(e),
-                      ))
-                  .toList(),
-              onChanged: (val) => setState(() => metode = val!),
-              decoration: InputDecoration(
-                labelText: "Metode Pembayaran",
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 30),
-
-            /// BUTTON
             ElevatedButton(
               onPressed: bayarSekarang,
               style: ElevatedButton.styleFrom(
