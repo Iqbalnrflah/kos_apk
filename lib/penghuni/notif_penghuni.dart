@@ -34,10 +34,7 @@ class NotifPenghuniPage extends StatelessWidget {
           );
         }
 
-        var data =
-            snapshot.data!.data()
-                as Map<String, dynamic>?;
-
+        var data = snapshot.data!.data()as Map<String, dynamic>?;
         String? photo = data?['photo'];
 
         return GestureDetector(
@@ -55,22 +52,13 @@ class NotifPenghuniPage extends StatelessWidget {
             radius: 18,
             backgroundColor:
                 const Color(0xFF9E182B),
-
             backgroundImage:
-                (photo != null &&
-                        photo.isNotEmpty)
-                    ? MemoryImage(
-                        base64Decode(photo),
-                      )
+                (photo != null && photo.isNotEmpty)
+                    ? MemoryImage(base64Decode(photo),)
                     : null,
-
             child:
-                (photo == null ||
-                        photo.isEmpty)
-                    ? const Icon(
-                        Icons.person,
-                        color: Colors.white,
-                      )
+                (photo == null || photo.isEmpty)
+                    ? const Icon(Icons.person,color: Colors.white,)
                     : null,
           ),
         );
@@ -89,10 +77,8 @@ class NotifPenghuniPage extends StatelessWidget {
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
                   .collection('pembayaran')
-                  .orderBy(
-                    'tanggal_bayar',
-                    descending: true,
-                  )
+                  .where('userId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
+                  .orderBy('tanggal_bayar',descending: true,)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState ==
@@ -115,20 +101,12 @@ class NotifPenghuniPage extends StatelessWidget {
                   padding: EdgeInsets.only(top: 0),
                   itemCount: data.length,
                   itemBuilder: (context, index) {
-                    var item =
-                        data[index].data()
-                            as Map<String, dynamic>;
-                    String nama =
-                        item['penghuni_nama'] ??
-                            "-";
-                    String metode =
-                        item['metode'] ?? "-";
-                    int jumlah =
-                        item['jumlah_bayar'] ?? 0;
-                    Timestamp? waktu =
-                        item['tanggal_bayar'];
-                    DateTime date =
-                        waktu != null
+                    var item = data[index].data() as Map<String, dynamic>;
+                    String nama = item['penghuni_nama'] ?? "-";
+                    String metode =item['metode'] ?? "-";
+                    int jumlah = item['jumlah_bayar'] ?? 0;
+                    Timestamp? waktu = item['tanggal_bayar'];
+                    DateTime date = waktu != null
                             ? waktu.toDate()
                             : DateTime.now();
                     String tanggal =

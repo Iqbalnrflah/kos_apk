@@ -1,107 +1,80 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import '../widgets/header.dart';
 
-class RiwayatPage extends StatelessWidget {
+class riwayatPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
-
-    if (user == null) {
-      return Scaffold(
-        body: Center(child: Text("User belum login")),
-      );
-    }
-
     return Scaffold(
       body: Column(
-        children: [ 
-          CustomHeader(title: "Daftar Riwayat"),
+        children: [
+          CustomHeader(title: "Riwayat"),
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
-                  .collectionGroup('kamar')
+                  .collection('notifikasi')
+                  .orderBy('created_at', descending: true)
                   .snapshots(),
               builder: (context, snapshot) {
-
                 if (snapshot.hasError) {
-                  return Center(child: Text("Error: ${snapshot.error}"));
+                  return Center(child: Text("Error"));
                 }
-
                 if (!snapshot.hasData) {
                   return Center(child: CircularProgressIndicator());
                 }
-
-                /// 🔥 FILTER: DATA MILIK USER
-                var data = snapshot.data!.docs.where((doc) {
-                  var item = doc.data() as Map<String, dynamic>;
-                  return item['penghuniId'] == user.uid;
-                }).toList();
-
+                var data = snapshot.data!.docs;
                 if (data.isEmpty) {
-                  return Center(child: Text("Belum ada riwayat"));
+                  return Center(child: Text("Belum ada notifikasi"));
                 }
-
-                /// 🔥 SORT TERBARU DI ATAS
-                data.sort((a, b) {
-                  var aTime = (a['updated_at'] as Timestamp?)?.toDate() ?? DateTime.now();
-                  var bTime = (b['updated_at'] as Timestamp?)?.toDate() ?? DateTime.now();
-                  return bTime.compareTo(aTime);
-                });
-
                 return ListView.builder(
                   padding: EdgeInsets.all(12),
                   itemCount: data.length,
                   itemBuilder: (context, index) {
-
-                    var item = data[index].data() as Map<String, dynamic>;
-
-                    String nama = item['penghuni_nama'] ?? "-";
-                    String kos = item['nama_kos'] ?? "-";
-                    String kamar = item['No_Kamar'] ?? "-";
-                    String status = item['status_bayar'] ?? "belum";
-
-                    /// 🔥 FORMAT TANGGAL
+                    var item =
+                        data[index].data() as Map<String, dynamic>;
+                    String title = item['title'] ?? "-";
+                    String nama = item['nama'] ?? "-";
+                    String metode = item['metode'] ?? "-";
+                    int nominal = item['nominal'] ?? 0;
                     String tanggal = "-";
-                    if (item['updated_at'] != null) {
-                      DateTime t = (item['updated_at'] as Timestamp).toDate();
+                    if (item['created_at'] != null) {
+                      DateTime t =
+                          (item['created_at'] as Timestamp).toDate();
                       tanggal =
                           "${t.day.toString().padLeft(2, '0')}/${t.month.toString().padLeft(2, '0')}/${t.year} . ${t.hour}:${t.minute.toString().padLeft(2, '0')}";
                     }
-
-                    bool isLunas = status == "lunas";
-
                     return Column(
                       children: [
-
                         Container(
                           padding: EdgeInsets.symmetric(vertical: 10),
                           child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment:
+                                CrossAxisAlignment.start,
                             children: [
-
-                              /// LEFT
                               Expanded(
                                 child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      nama,
+                                      title,
                                       style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                                          fontWeight:
+                                              FontWeight.bold),
                                     ),
                                     SizedBox(height: 4),
-                                    Text(kos, style: TextStyle(fontSize: 12)),
-                                    Text(kamar, style: TextStyle(fontSize: 12)),
+                                    Text(nama,
+                                        style:
+                                            TextStyle(fontSize: 12)),
+                                    Text(metode,
+                                        style:
+                                            TextStyle(fontSize: 12)),
                                   ],
                                 ),
                               ),
-
-                              /// RIGHT
                               Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
+                                crossAxisAlignment:
+                                    CrossAxisAlignment.end,
                                 children: [
                                   Text(
                                     tanggal,
@@ -111,29 +84,19 @@ class RiwayatPage extends StatelessWidget {
                                     ),
                                   ),
                                   SizedBox(height: 6),
-
-                                  Container(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: 12, vertical: 4),
-                                    decoration: BoxDecoration(
-                                      color: Color(0xFF9E182B),
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                    child: Text(
-                                      isLunas ? "Lunas" : "Belum Lunas",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 11,
-                                      ),
+                                  Text(
+                                    "Rp.$nominal",
+                                    style: TextStyle(
+                                      fontWeight:
+                                          FontWeight.bold,
                                     ),
                                   ),
                                 ],
-                              )
+                              ),
                             ],
                           ),
                         ),
-
-                        Divider(thickness: 1, color: Colors.black26),
+                        Divider(color: Colors.black26),
                       ],
                     );
                   },

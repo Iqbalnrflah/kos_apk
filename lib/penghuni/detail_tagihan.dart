@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'midtrans_webview.dart';
@@ -74,6 +75,7 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
             'penghuni_nama': widget.data['penghuni_nama'],
             'penghuni_phone': widget.data['penghuni_phone'],
             'kosId': widget.kosId,
+            'userId': FirebaseAuth.instance.currentUser!.uid,
             'kamarId': widget.kamarId,
             'jumlah_bayar': totalTagihan,
             'total_tagihan': totalTagihan,
@@ -91,6 +93,8 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
               .doc(widget.kamarId)
               .update({
             'status_pembayaran': 'Lunas',
+            'update_at': FieldValue.serverTimestamp(),
+            'status_bayar': 'lunas',
           });
           await showSuccessDialog(context);
           Navigator.pop(context,true);

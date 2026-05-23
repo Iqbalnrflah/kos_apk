@@ -153,7 +153,9 @@ class AuthPageState extends State<AuthPage> {
             AnimatedContainer(
               duration: Duration(milliseconds: 300),
               curve: Curves.easeInOut,
-              height: isLogin ? 430 : 620,
+              constraints: BoxConstraints(
+                minHeight: isLogin ? 430 : 620,
+              ),
               width: double.infinity,
               padding: EdgeInsets.all(20),
               decoration: BoxDecoration(
@@ -171,9 +173,7 @@ class AuthPageState extends State<AuthPage> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            setState(() {
-                              isLogin = true;
-                            });
+                            setState(() {isLogin = true;});
                           },
                           child: Column(
                             children: [
@@ -206,9 +206,7 @@ class AuthPageState extends State<AuthPage> {
                         SizedBox(width: 40),
                         GestureDetector(
                           onTap: () {
-                            setState(() {
-                              isLogin = false;
-                            });
+                            setState(() {isLogin = false;});
                           },
                           child: Column(
                             children: [
@@ -309,6 +307,18 @@ class AuthPageState extends State<AuthPage> {
                                   !showPassword;
                             });
                           },
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 6),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: 
+                      Text(
+                        "Minimal 8 karakter",
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.red,
                         ),
                       ),
                     ),

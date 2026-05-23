@@ -86,57 +86,31 @@ class KamarPage extends StatelessWidget {
                   itemCount: kamarList.length,
                   itemBuilder: (context, index) {
                     var kamar = kamarList[index];
-                    var data =kamar.data() as Map<String, dynamic>;
+                    var data =
+                        kamar.data()
+                            as Map<String, dynamic>;
                     bool isTerisi =
                         data['status'] == 'terisi';
                     return GestureDetector(
                       onTap: isTerisi
                       ? null
                       : () async {
-                      
                           final user =
                               FirebaseAuth.instance.currentUser;
-                  
-                          if (user == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  "Silakan login terlebih dahulu",
-                                ),
-                              ),
-                            );
-                            return;
-                          }
-                  
-                          /// AMBIL SEMUA DATA KAMAR
-                          final semuaKamar =
+                          if (user == null) return;
+                          final kamarCheck =
                               await FirebaseFirestore.instance
                                   .collectionGroup('kamar')
+                                  .where('penghuniId', isEqualTo: user.uid)
+                                  .where( 'status', isEqualTo: 'terisi')
                                   .get();
-                  
-                          /// CEK APAKAH USER SUDAH PUNYA KAMAR
-                          bool sudahIsi =
-                              semuaKamar.docs.any((doc) {
-                              
-                            var kamarData =
-                                doc.data() as Map<String, dynamic>;
-                  
-                            return kamarData['userId'] == user.uid &&
-                                kamarData['status'] == 'terisi';
-                          });
-                  
-                          /// JIKA SUDAH PUNYA KAMAR
-                          if (sudahIsi) {
-                          
+                          if (kamarCheck.docs.isNotEmpty) {
                             await showWarningDialog(
                               context,
-                              "Anda sudah mengisi kamar kos lain",
+                              "Kamu sudah menempati kamar lain. Hapus kamar lama untuk menempati kamar baru.",
                             );
-                  
                             return;
                           }
-                  
-                          /// JIKA BELUM
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -147,6 +121,31 @@ class KamarPage extends StatelessWidget {
                             ),
                           );
                         },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: isTerisi
+                              ? Colors.grey[200]
+                              : const Color(0xFF9E182B),
+                          borderRadius:
+                              BorderRadius.circular(12),
+                          border: Border.all(
+                            color: const Color(0xFF9E182B),
+                            width: 1.5,
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            data['No_Kamar'] ?? kamar.id,
+                            style: TextStyle(
+                              color: isTerisi
+                                  ? const Color(0xFF9E182B)
+                                  : Colors.grey,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
                     );
                   },
                 );
