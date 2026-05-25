@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'home_page.dart';
 import 'pembayaran_page.dart';
+import 'notifikasi_page.dart';
 import 'riwayat_page.dart';
-import 'notif_page.dart';
 import 'tambah_kamar_page.dart';
 import 'profil_page.dart';
 
@@ -121,11 +121,9 @@ Widget build(BuildContext context) {
           children: [
             navItem(Icons.home, "Home", 0),
             navItem(Icons.receipt_long, "Tagihan", 1),
-
             SizedBox(width: 40),
-            
-            navItem(Icons.history, "Riwayat", 2),
-            navItem(Icons.notifications, "Notif", 3),
+            navItem(Icons.notifications, "Notif", 2),
+            navItem(Icons.history, "Riwayat", 3),
           ],
         ),
       ),

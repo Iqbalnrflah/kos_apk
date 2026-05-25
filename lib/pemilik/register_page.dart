@@ -12,41 +12,88 @@ class AuthPage extends StatefulWidget {
 class AuthPageState extends State<AuthPage> {
   bool isLogin = true;
   bool isLoading = false;
+  bool isPasswordValid = true;
   bool showPassword = false;
   bool showConfirmPassword = false;
+  bool isPasswordComplex(String password) {
+    return password.length >= 8 &&
+        password.contains(RegExp(r'[A-Z]')) &&
+        password.contains(RegExp(r'[a-z]')) &&
+        password.contains(RegExp(r'[0-9]')) &&
+        password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'));
+  }
   String role = "penghuni";
+  int failedLoginAttempts = 0;
+  DateTime? lockUntil;
 
   final email = TextEditingController();
   final password = TextEditingController();
   final nama = TextEditingController();
   final phone = TextEditingController();
   final confirmPassword = TextEditingController();
+
   Future<void> login() async {
+    if (lockUntil != null &&
+        DateTime.now().isBefore(lockUntil!)) {
+
+      int remainingMinutes =
+          lockUntil!.difference(DateTime.now()).inMinutes + 1;
+
+      await showCustomDialog(
+        context: context,
+        icon: Icons.lock,
+        color: Colors.red,
+        title: "Akun Dikunci",
+        subtitle:
+            "Terlalu banyak percobaan login gagal. Coba lagi dalam $remainingMinutes menit.",
+      );
+
+      return;
+    }
+
     setState(() {
       isLoading = true;
     });
+
     try {
+
       UserCredential user = await FirebaseAuth.instance
           .signInWithEmailAndPassword(
         email: email.text.trim(),
         password: password.text.trim(),
       );
+
+      // RESET JIKA LOGIN BERHASIL
+      failedLoginAttempts = 0;
+      lockUntil = null;
+
       DocumentSnapshot data = await FirebaseFirestore.instance
           .collection('users')
           .doc(user.user!.uid)
           .get();
+
       if (!data.exists) {
         throw Exception("Data user tidak ditemukan");
       }
+
       Map<String, dynamic> userData =
           data.data() as Map<String, dynamic>;
-      String userRole = userData['role'] ?? "penghuni";
+
+      String userRole =
+          userData['role'] ?? "penghuni";
+
       Widget targetPage;
+
       if (userRole == "pemilik") {
         targetPage = MainPage();
       } else {
         targetPage = HomePenghuni();
       }
+
+      setState(() {
+        isLoading = false;
+      });
+
       await showCustomDialog(
         context: context,
         icon: Icons.check_circle,
@@ -54,24 +101,36 @@ class AuthPageState extends State<AuthPage> {
         title: "Login Berhasil",
         subtitle: "Selamat datang kembali",
       );
-      setState(() {
-        isLoading = false;
-      });
+
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (_) => targetPage),
+        MaterialPageRoute(
+          builder: (_) => targetPage,
+        ),
         (route) => false,
       );
+
     } catch (e) {
+
+      failedLoginAttempts++;
+
+      // KUNCI AKUN SETELAH 5 KALI GAGAL
+      if (failedLoginAttempts >= 5) {
+        lockUntil =
+            DateTime.now().add(Duration(minutes: 15));
+      }
+
       setState(() {
         isLoading = false;
       });
+
       await showCustomDialog(
         context: context,
         icon: Icons.error,
         color: Colors.red,
         title: "Login Gagal",
-        subtitle: "Email atau password salah",
+        subtitle:
+            "Email atau password salah\nPercobaan ke-$failedLoginAttempts dari 5",
       );
     }
   }
@@ -87,6 +146,19 @@ class AuthPageState extends State<AuthPage> {
       );
       return;
     }
+
+    if (!isPasswordComplex(password.text)) {
+      await showCustomDialog(
+        context: context,
+        icon: Icons.error,
+        color: Colors.orange,
+        title: "Password Tidak Kompleks",
+        subtitle:
+            "Password harus minimal 8 karakter dan mengandung huruf besar, huruf kecil, dan angka",
+      );
+      return;
+    }
+
     setState(() {
       isLoading = true;
     });
@@ -289,6 +361,11 @@ class AuthPageState extends State<AuthPage> {
                     TextField(
                       controller: password,
                       obscureText: !showPassword,
+                      onChanged: (value) {
+                        setState(() {
+                          isPasswordValid =value.length >= 8;
+                        });
+                      },
                       decoration: InputDecoration(
                         labelText: "Password",
                         border: OutlineInputBorder(
@@ -310,18 +387,20 @@ class AuthPageState extends State<AuthPage> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 6),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: 
-                      Text(
-                        "Minimal 8 karakter",
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Colors.red,
+                    if (!isPasswordValid)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6),
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            "Password minimal 8 karakter (harus mengandung huruf besar, kecil, angka dan simbol)",
+                            style: TextStyle(
+                              color: Colors.red,
+                              fontSize: 12,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
                     if (!isLogin)
                       SizedBox(height: 15),
                     if (!isLogin)
