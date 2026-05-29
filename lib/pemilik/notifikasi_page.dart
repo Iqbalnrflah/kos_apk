@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../widgets/header.dart';
 
-class riwayatPage extends StatelessWidget {
+class notifPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
