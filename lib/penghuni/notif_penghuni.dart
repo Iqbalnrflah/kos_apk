@@ -7,25 +7,20 @@ import '../widgets/header.dart';
 
 class NotifPenghuniPage extends StatelessWidget {
   const NotifPenghuniPage({super.key});
-
-  /// FOTO PROFILE
   Widget buildProfileIcon(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-
     if (user == null) {
       return const CircleAvatar(
         radius: 18,
         child: Icon(Icons.person),
       );
     }
-
     return StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
           .snapshots(),
       builder: (context, snapshot) {
-
         if (!snapshot.hasData) {
           return const CircleAvatar(
             radius: 18,
@@ -33,10 +28,8 @@ class NotifPenghuniPage extends StatelessWidget {
             child: Icon(Icons.person, color: Colors.white),
           );
         }
-
         var data = snapshot.data!.data()as Map<String, dynamic>?;
         String? photo = data?['photo'];
-
         return GestureDetector(
           onTap: () {
             Navigator.push(
@@ -47,25 +40,23 @@ class NotifPenghuniPage extends StatelessWidget {
               ),
             );
           },
-
           child: CircleAvatar(
             radius: 18,
             backgroundColor:
                 const Color(0xFF9E182B),
             backgroundImage:
-                (photo != null && photo.isNotEmpty)
-                    ? MemoryImage(base64Decode(photo),)
-                    : null,
+              (photo != null && photo.isNotEmpty)
+                ? MemoryImage(base64Decode(photo),)
+                : null,
             child:
-                (photo == null || photo.isEmpty)
-                    ? const Icon(Icons.person,color: Colors.white,)
-                    : null,
+              (photo == null || photo.isEmpty)
+                ? const Icon(Icons.person,color: Colors.white,)
+                : null,
           ),
         );
       },
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,22 +69,17 @@ class NotifPenghuniPage extends StatelessWidget {
               stream: FirebaseFirestore.instance
                   .collection('pembayaran')
                   .where('userId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
-                  .orderBy('tanggal_bayar',descending: true,)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState ==
                     ConnectionState.waiting) {
                   return const Center(
-                    child:
-                        CircularProgressIndicator(),
-                  );
+                    child:CircularProgressIndicator());
                 }
                 if (!snapshot.hasData ||
                     snapshot.data!.docs.isEmpty) {
                   return const Center(
-                    child: Text(
-                      "Belum ada notifikasi",
-                    ),
+                    child: Text("Belum ada notifikasi",),
                   );
                 }
                 var data = snapshot.data!.docs;
@@ -140,59 +126,46 @@ class NotifPenghuniPage extends StatelessWidget {
                                 .start,
                         children: [
                           Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
-                            crossAxisAlignment:
-                                CrossAxisAlignment
-                                    .start,
+                            mainAxisAlignment:MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment:CrossAxisAlignment.start,
                             children: [
                               const Expanded(
                                 child: Text(
                                   "Konfirmasi Pembayaran Berhasil",
                                   style: TextStyle(
                                     fontWeight:
-                                        FontWeight.w600,
+                                      FontWeight.w600,
                                     fontSize: 14,
                                   ),
                                 ),
                               ),
-                              const SizedBox(
-                                width: 10,
-                              ),
+                              const SizedBox(width: 10),
                               Text(
                                 tanggal,
                                 style:
                                     const TextStyle(
-                                  color:
-                                      Colors.grey,
+                                  color:Colors.grey,
                                   fontSize: 12,
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(
-                            height: 10,
-                          ),
+                          const SizedBox(height: 10),
                           Text(
                             nama,
-                            style: const TextStyle(
-                              fontSize: 15,
-                            ),
+                            style: const TextStyle(fontSize: 15),
                           ),
                           const SizedBox(
                             height: 6,
                           ),
                           Row(
-                            mainAxisAlignment:
-                                MainAxisAlignment
-                                    .spaceBetween,
+                            mainAxisAlignment:MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
                                 metode,
                                 style:
                                     const TextStyle(
-                                  color:
+                                      color:
                                       Colors.grey,
                                   fontSize: 14,
                                 ),

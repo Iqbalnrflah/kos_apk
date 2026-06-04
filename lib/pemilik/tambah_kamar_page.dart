@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class TambahKamarPage extends StatefulWidget {
   @override
   _TambahKamarPageState createState() => _TambahKamarPageState();
 }
-
 class _TambahKamarPageState extends State<TambahKamarPage> {
   final pemilik = TextEditingController();
   final namaKos = TextEditingController();
   final jumlahKamar = TextEditingController();
   final alamat = TextEditingController();
   final harga = TextEditingController();
-
   Future<void> tambahKamar() async {
     if (pemilik.text.isEmpty ||
         namaKos.text.isEmpty ||
@@ -24,38 +23,33 @@ class _TambahKamarPageState extends State<TambahKamarPage> {
       );
       return;
     }
-
     int? totalKamar = int.tryParse(jumlahKamar.text);
     int? hargaKos = int.tryParse(harga.text);
-
     if (totalKamar == null || hargaKos == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Jumlah kamar & harga harus angka")),
       );
       return;
     }
-
     try {
       var kosRef = await FirebaseFirestore.instance.collection('kost').add({
         'pemilik': pemilik.text,
         'nama_kos': namaKos.text,
+        'owner_id': FirebaseAuth.instance.currentUser!.uid,
         'jumlah_kamar': totalKamar,
         'alamat': alamat.text,
         'harga': hargaKos,
         'created_at': Timestamp.now(),
       });
-
       for (int i = 1; i <= totalKamar; i++) {
         await kosRef.collection('kamar').add({
           'No_Kamar': "Kamar $i",
           'status': "kosong",
         });
       }
-
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Kos & kamar berhasil dibuat")),
       );
-
       Navigator.pop(context);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -63,8 +57,6 @@ class _TambahKamarPageState extends State<TambahKamarPage> {
       );
     }
   }
-
-  /// 🔥 INPUT SESUAI DESIGN
   Widget buildInput(TextEditingController controller, String hint,
       {TextInputType keyboard = TextInputType.text}) {
     return Padding(
@@ -76,9 +68,7 @@ class _TambahKamarPageState extends State<TambahKamarPage> {
           hintText: hint,
           filled: true,
           fillColor: Colors.white,
-          contentPadding:
-              EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-
+          contentPadding:EdgeInsets.symmetric(horizontal: 15, vertical: 12),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(15),
             borderSide: BorderSide(color: Colors.black54),
@@ -95,24 +85,19 @@ class _TambahKamarPageState extends State<TambahKamarPage> {
       ),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: IconThemeData(color: Colors.black),
       ),
-
       body: Center(
         child: SingleChildScrollView(
           child: Column(
             children: [
-
-              /// 🔥 BOX UTAMA
               Container(
                 margin: EdgeInsets.symmetric(horizontal: 20),
                 padding: EdgeInsets.all(20),
@@ -141,9 +126,7 @@ class _TambahKamarPageState extends State<TambahKamarPage> {
                   ],
                 ),
               ),
-
               SizedBox(height: 20),
-
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20),
                 child: ElevatedButton(

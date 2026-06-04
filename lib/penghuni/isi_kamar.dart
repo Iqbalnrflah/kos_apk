@@ -11,7 +11,6 @@ class IsiKamar extends StatefulWidget {
     required this.kosId,
     required this.kamarId,
   });
-
   @override
   State<IsiKamar> createState() => _IsiKamarState();
 }
@@ -21,7 +20,6 @@ class _IsiKamarState extends State<IsiKamar> {
   int harga = 0;
   String noKamar = "-";
   bool loading = true;
-
   @override
   void initState() {
     super.initState();
@@ -49,6 +47,11 @@ class _IsiKamarState extends State<IsiKamar> {
 }
   Future<void> simpan() async {
     final user = FirebaseAuth.instance.currentUser;
+    var kostDoc = await FirebaseFirestore.instance
+      .collection('kost')
+      .doc(widget.kosId)
+      .get();
+  String ownerId = kostDoc['owner_id'];
     await FirebaseFirestore.instance
         .collection('kost')
         .doc(widget.kosId)
@@ -58,6 +61,7 @@ class _IsiKamarState extends State<IsiKamar> {
       'penghuni_nama': nama.text,
       'penghuni_phone': phone.text,
       'penghuniId': user!.uid,
+      'ownerId': ownerId,
       'kosId': widget.kosId,
       'status': 'terisi',
       'No_Kamar': noKamar,

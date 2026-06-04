@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../widgets/header.dart';
 
@@ -7,116 +8,73 @@ class PembayaranPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        CustomHeader(
-          title: "Daftar Pembayaran",
-        ),
+        CustomHeader(title: "Daftar Pembayaran"),
         Expanded(
           child: StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
-                .collectionGroup('kamar')
-                .snapshots(),
-
+            .collectionGroup('kamar')
+            .snapshots(),
             builder: (context, snapshot) {
-
               if (snapshot.hasError) {
                 return Center(
-                  child: Text(
-                    "Error: ${snapshot.error}",
-                  ),
+                  child: Text("Error: ${snapshot.error}"),
                 );
               }
-
               if (!snapshot.hasData) {
                 return Center(
                   child: CircularProgressIndicator(),
                 );
               }
-
-              var data =
-                  snapshot.data!.docs.where((doc) {
-
-                var item =
-                    doc.data()
-                        as Map<String, dynamic>;
-
-                return item['status'] == "terisi" &&
-                    item['status_bayar'] == "belum";
-
+              final ownerId = FirebaseAuth.instance.currentUser!.uid;
+              List<QueryDocumentSnapshot> data = 
+              snapshot.data!.docs.where((doc) {
+                var item = doc.data() as Map<String, dynamic>;
+                String statusBayar = item['status_bayar'] ?? "belum";
+                return item['ownerId'] == ownerId && item['status'] == 'terisi';
               }).toList();
-
               if (data.isEmpty) {
-                return Center(
-                  child: Text(
-                    "Semua penghuni sudah bayar",
-                  ),
+                return const Center(
+                  child: Text("Belum ada pembayaran"),
                 );
               }
-
               return ListView.builder(
-                padding: EdgeInsets.only(
-                  top: 10,
-                  bottom: 120,
-                ),
-
+                padding: EdgeInsets.only(top: 10,bottom: 120,),
                 itemCount: data.length,
-
                 itemBuilder: (context, index) {
-
                   var doc = data[index];
-
-                  var item =
-                      doc.data()
-                          as Map<String, dynamic>;
-
-                  String nama =
-                      item['penghuni_nama'] ?? "-";
-
-                  String kamar =
-                      item['No_Kamar'] ?? "-";
-
+                  var item = doc.data() as Map<String, dynamic>;
+                  String nama = item['penghuni_nama'] ?? "-";
+                  String kamar = item['No_Kamar'] ?? "-";
+                  String statusBayar = item['status_bayar'] ?? "belum";
                   return Container(
                     margin: EdgeInsets.symmetric(
                       horizontal: 12,
                       vertical: 6,
                     ),
-
                     padding: EdgeInsets.all(16),
-
                     decoration: BoxDecoration(
                       color: Color(0xFF9E182B),
-
                       borderRadius:
                           BorderRadius.circular(15),
                     ),
-
                     child: Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
-
+                      mainAxisAlignment:MainAxisAlignment.spaceBetween,
                       children: [
-
                         Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
-
+                          crossAxisAlignment:CrossAxisAlignment.start,
                           children: [
-
-                            Text(
-                              nama,
-
+                            Text(nama,
                               style: TextStyle(
-                                color: Colors.white,
+                                color: statusBayar == "lunas"
+                                  ? Colors.green.shade100
+                                  : Colors.white,
                                 fontWeight:
-                                    FontWeight.bold,
-                                fontSize: 16,
+                                  FontWeight.bold,
+                                  fontSize: 16,
                               ),
                             ),
-
                             SizedBox(height: 6),
-
-                            Text(
-                              "Kamar $kamar",
-
+                            Text("$kamar",
                               style: TextStyle(
                                 color: Colors.white70,
                                 fontSize: 13,
@@ -124,30 +82,26 @@ class PembayaranPage extends StatelessWidget {
                             ),
                           ],
                         ),
-
                         Container(
                           padding:
-                              EdgeInsets.symmetric(
+                            EdgeInsets.symmetric(
                             horizontal: 12,
                             vertical: 6,
                           ),
-
                           decoration: BoxDecoration(
                             color: Colors.white,
-
                             borderRadius:
-                                BorderRadius.circular(
-                              20,
-                            ),
+                              BorderRadius.circular(20,),
                           ),
-
                           child: Text(
-                            "Belum Bayar",
-
+                            statusBayar == "lunas"
+                              ? "Lunas"
+                              : "Belum Lunas",
                             style: TextStyle(
-                              color: Color(0xFF9E182B),
-                              fontWeight:
-                                  FontWeight.bold,
+                              color: statusBayar == "lunas"
+                                ? Colors.green
+                                  : const Color(0xFF9E182B),
+                              fontWeight:FontWeight.bold,
                             ),
                           ),
                         ),

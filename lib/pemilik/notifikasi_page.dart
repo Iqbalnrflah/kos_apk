@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../widgets/header.dart';
 
 class notifPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final ownerId = FirebaseAuth.instance.currentUser!.uid;
     return Scaffold(
       body: Column(
         children: [
@@ -12,8 +14,9 @@ class notifPage extends StatelessWidget {
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
               stream: FirebaseFirestore.instance
-                  .collection('notifikasi')
-                  .orderBy('created_at', descending: true)
+                  .collection('pembayaran')
+                  .where('ownerId',isEqualTo: ownerId) 
+                  .orderBy('tanggal_bayar', descending: true)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
@@ -32,14 +35,14 @@ class notifPage extends StatelessWidget {
                   itemBuilder: (context, index) {
                     var item =
                         data[index].data() as Map<String, dynamic>;
-                    String title = item['title'] ?? "-";
-                    String nama = item['nama'] ?? "-";
+                    String title = 'Konfirmasi Pembayaran Berhasil';
+                    String nama = item['penghuni_nama'] ?? "-";
                     String metode = item['metode'] ?? "-";
-                    int nominal = item['nominal'] ?? 0;
+                    int nominal = item['jumlah_bayar'] ?? 0;
                     String tanggal = "-";
-                    if (item['created_at'] != null) {
+                    if (item['tanggal_bayar'] != null) {
                       DateTime t =
-                          (item['created_at'] as Timestamp).toDate();
+                          (item['tanggal_bayar'] as Timestamp).toDate();
                       tanggal =
                           "${t.day.toString().padLeft(2, '0')}/${t.month.toString().padLeft(2, '0')}/${t.year} . ${t.hour}:${t.minute.toString().padLeft(2, '0')}";
                     }
@@ -48,44 +51,34 @@ class notifPage extends StatelessWidget {
                         Container(
                           padding: EdgeInsets.symmetric(vertical: 10),
                           child: Row(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
+                            crossAxisAlignment:CrossAxisAlignment.start,
                             children: [
                               Expanded(
                                 child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
+                                  crossAxisAlignment:CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      title,
+                                    Text(title,
                                       style: TextStyle(
-                                          fontWeight:
-                                              FontWeight.bold),
+                                        fontWeight:
+                                          FontWeight.bold),
                                     ),
                                     SizedBox(height: 4),
-                                    Text(nama,
-                                        style:
-                                            TextStyle(fontSize: 12)),
-                                    Text(metode,
-                                        style:
-                                            TextStyle(fontSize: 12)),
+                                    Text(nama,style:TextStyle(fontSize: 12)),
+                                    Text(metode,style:TextStyle(fontSize: 12)),
                                   ],
                                 ),
                               ),
                               Column(
-                                crossAxisAlignment:
-                                    CrossAxisAlignment.end,
+                                crossAxisAlignment:CrossAxisAlignment.end,
                                 children: [
-                                  Text(
-                                    tanggal,
+                                  Text(tanggal,
                                     style: TextStyle(
                                       fontSize: 11,
                                       color: Colors.black54,
                                     ),
                                   ),
                                   SizedBox(height: 6),
-                                  Text(
-                                    "Rp.$nominal",
+                                  Text("Rp.$nominal",
                                     style: TextStyle(
                                       fontWeight:
                                           FontWeight.bold,

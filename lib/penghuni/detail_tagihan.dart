@@ -17,21 +17,17 @@ class DetailTagihanPage extends StatefulWidget {
     required this.kosId,
     required this.kamarId,
   });
-
   @override
   State<DetailTagihanPage> createState() => _DetailTagihanPageState();
 }
-
 class _DetailTagihanPageState extends State<DetailTagihanPage> {
   int totalTagihan = 0;
   String metode = "Transfer";
-
   @override
   void initState() {
     super.initState();
     totalTagihan = widget.data['harga'] ?? 0;
   }
-
   Future<void> bayarSekarang() async {
     if (totalTagihan <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -39,7 +35,6 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
       );
       return;
     }
-
     try {
       final response = await http.post(
         Uri.parse("https://api.kospay.my.id/bayar"),
@@ -49,26 +44,23 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
           "amount": totalTagihan,
         }),
       );
-
-      print("STATUS: ${response.statusCode}");
-      print("BODY: ${response.body}");
-
       if (response.statusCode != 200) {
         throw Exception(response.body);
       }
-
       final data = jsonDecode(response.body);
       String url = data['url'];
-
       final result = await Navigator.push<bool>(
         context,
         MaterialPageRoute(
           builder: (_) => MidtransWebView(url: url),
         ),
       );
-      print("Hasil Webview: $result");
         if (result == true) {
-          print("Masuk Firebase");
+          var kostDoc = await FirebaseFirestore.instance
+              .collection('kost')
+              .doc(widget.kosId)
+              .get();
+          String ownerId = kostDoc['owner_id'];
           await FirebaseFirestore.instance
               .collection('pembayaran')
               .add({
@@ -76,6 +68,7 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
             'penghuni_phone': widget.data['penghuni_phone'],
             'kosId': widget.kosId,
             'userId': FirebaseAuth.instance.currentUser!.uid,
+            'ownerId': ownerId,
             'kamarId': widget.kamarId,
             'jumlah_bayar': totalTagihan,
             'total_tagihan': totalTagihan,
@@ -85,7 +78,6 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
             'tanggal_bayar': FieldValue.serverTimestamp(),
           });
 
-          /// UPDATE STATUS KAMAR
           await FirebaseFirestore.instance
               .collection('kost')
               .doc(widget.kosId)
@@ -135,8 +127,8 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
     String nama = data['penghuni_nama'] ?? "-";
     String phone = data['penghuni_phone'] ?? "-";
     DateTime tgl = (data['tanggal_masuk'] is Timestamp)
-        ? (data['tanggal_masuk'] as Timestamp).toDate()
-        : DateTime.now();
+      ? (data['tanggal_masuk'] as Timestamp).toDate()
+      : DateTime.now();
     String jatuhTempo = "${tgl.day}/${tgl.month}/${tgl.year}";
     return Scaffold(
       appBar: AppBar(
@@ -152,9 +144,7 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
-                boxShadow: const [
-                  BoxShadow(color: Colors.black12, blurRadius: 6)
-                ],
+                boxShadow: const [BoxShadow(color: Colors.black12, blurRadius: 6)],
               ),
               child: Column(
                 children: [
@@ -165,9 +155,7 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
                 ],
               ),
             ),
-
             const SizedBox(height: 20),
-
             TextField(
               enabled: false,
               controller: TextEditingController(
@@ -181,7 +169,6 @@ class _DetailTagihanPageState extends State<DetailTagihanPage> {
               ),
             ),
             const SizedBox(height: 20),
-
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
