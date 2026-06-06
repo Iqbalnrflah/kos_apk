@@ -67,6 +67,7 @@ class KamarPage extends StatelessWidget {
                   .collection('kost')
                   .doc(kosId)
                   .collection('kamar')
+                  .orderBy('nomor_kamar')
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {

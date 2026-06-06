@@ -33,12 +33,8 @@ class AuthPageState extends State<AuthPage> {
   final confirmPassword = TextEditingController();
 
   Future<void> login() async {
-    if (lockUntil != null &&
-        DateTime.now().isBefore(lockUntil!)) {
-
-      int remainingMinutes =
-          lockUntil!.difference(DateTime.now()).inMinutes + 1;
-
+    if (lockUntil != null && DateTime.now().isBefore(lockUntil!)) {
+      int remainingMinutes = lockUntil!.difference(DateTime.now()).inMinutes + 1;
       await showCustomDialog(
         context: context,
         icon: Icons.lock,
@@ -47,53 +43,35 @@ class AuthPageState extends State<AuthPage> {
         subtitle:
             "Terlalu banyak percobaan login gagal. Coba lagi dalam $remainingMinutes menit.",
       );
-
       return;
     }
-
     setState(() {
       isLoading = true;
     });
-
     try {
-
-      UserCredential user = await FirebaseAuth.instance
-          .signInWithEmailAndPassword(
+      UserCredential user = await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email.text.trim(),
         password: password.text.trim(),
       );
-
-      // RESET JIKA LOGIN BERHASIL
       failedLoginAttempts = 0;
       lockUntil = null;
-
       DocumentSnapshot data = await FirebaseFirestore.instance
           .collection('users')
           .doc(user.user!.uid)
           .get();
-
       if (!data.exists) {
         throw Exception("Data user tidak ditemukan");
       }
 
-      Map<String, dynamic> userData =
-          data.data() as Map<String, dynamic>;
-
-      String userRole =
-          userData['role'] ?? "penghuni";
-
+      Map<String, dynamic> userData = data.data() as Map<String, dynamic>;
+      String userRole = userData['role'] ?? "penghuni";
       Widget targetPage;
-
       if (userRole == "pemilik") {
         targetPage = MainPage();
       } else {
         targetPage = HomePenghuni();
       }
-
-      setState(() {
-        isLoading = false;
-      });
-
+      setState(() { isLoading = false;});
       await showCustomDialog(
         context: context,
         icon: Icons.check_circle,
@@ -111,26 +89,20 @@ class AuthPageState extends State<AuthPage> {
       );
 
     } catch (e) {
-
       failedLoginAttempts++;
-
-      // KUNCI AKUN SETELAH 5 KALI GAGAL
       if (failedLoginAttempts >= 5) {
         lockUntil =
-            DateTime.now().add(Duration(minutes: 15));
+          DateTime.now().add(Duration(minutes: 15));
       }
 
-      setState(() {
-        isLoading = false;
-      });
+      setState(() {isLoading = false;});
 
       await showCustomDialog(
         context: context,
         icon: Icons.error,
         color: Colors.red,
         title: "Login Gagal",
-        subtitle:
-            "Email atau password salah\nPercobaan ke-$failedLoginAttempts dari 5",
+        subtitle: "Email atau password salah\nPercobaan ke-$failedLoginAttempts dari 5",
       );
     }
   }
@@ -159,12 +131,9 @@ class AuthPageState extends State<AuthPage> {
       return;
     }
 
-    setState(() {
-      isLoading = true;
-    });
+    setState(() {isLoading = true;});
     try {
-      UserCredential user = await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
+      UserCredential user = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email.text.trim(),
         password: password.text.trim(),
       );
@@ -177,9 +146,7 @@ class AuthPageState extends State<AuthPage> {
         'nama': nama.text,
         'phone': phone.text,
       });
-      setState(() {
-        isLoading = false;
-      });
+      setState(() {isLoading = false;});
       await showCustomDialog(
         context: context,
         icon: Icons.check_circle,
@@ -187,13 +154,9 @@ class AuthPageState extends State<AuthPage> {
         title: "Registrasi Berhasil",
         subtitle: "Silakan login dengan akun Anda",
       );
-      setState(() {
-        isLogin = true;
-      });
+      setState(() {isLogin = true;});
     } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
+      setState(() {isLoading = false;});
       String message = "Register gagal";
       if (e.toString().contains('email-already-in-use')) {
         message = "Email sudah terdaftar";
@@ -240,36 +203,32 @@ class AuthPageState extends State<AuthPage> {
                 child: Column(
                   children: [
                     Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
+                      mainAxisAlignment:MainAxisAlignment.center,
                       children: [
                         GestureDetector(
                           onTap: () {
                             setState(() {isLogin = true;});
-                          },
+},
                           child: Column(
                             children: [
                               Text(
                                 "Login",
                                 style: TextStyle(
                                   color: isLogin
-                                      ? Colors.black
-                                      : Colors.grey,
+                                    ? Colors.black
+                                    : Colors.grey,
                                   fontSize: 22,
-                                  fontWeight:
-                                      FontWeight.bold,
+                                  fontWeight:FontWeight.bold,
                                 ),
                               ),
                               SizedBox(height: 5),
                               AnimatedContainer(
-                                duration:
-                                    Duration(milliseconds: 300),
+                                duration:Duration(milliseconds: 300),
                                 width: isLogin ? 60 : 0,
                                 height: 3,
                                 decoration: BoxDecoration(
                                   color: Color(0xFF9E182B),
-                                  borderRadius:
-                                      BorderRadius.circular(10),
+                                  borderRadius:BorderRadius.circular(10),
                                 ),
                               ),
                             ],
@@ -289,20 +248,17 @@ class AuthPageState extends State<AuthPage> {
                                       ? Colors.black
                                       : Colors.grey,
                                   fontSize: 22,
-                                  fontWeight:
-                                      FontWeight.bold,
+                                  fontWeight:FontWeight.bold,
                                 ),
                               ),
                               SizedBox(height: 5),
                               AnimatedContainer(
-                                duration:
-                                    Duration(milliseconds: 300),
+                                duration:Duration(milliseconds: 300),
                                 width: !isLogin ? 90 : 0,
                                 height: 3,
                                 decoration: BoxDecoration(
                                   color: Color(0xFF9E182B),
-                                  borderRadius:
-                                      BorderRadius.circular(10),
+                                  borderRadius:BorderRadius.circular(10),
                                 ),
                               ),
                             ],
@@ -312,8 +268,7 @@ class AuthPageState extends State<AuthPage> {
                     ),
                     SizedBox(height: 25),
                     Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.center,
+                      mainAxisAlignment:MainAxisAlignment.center,
                       children: [
                         _roleButton("penghuni"),
                         SizedBox(width: 10),
@@ -327,8 +282,7 @@ class AuthPageState extends State<AuthPage> {
                         decoration: InputDecoration(
                           labelText: "Nama Lengkap",
                           border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.circular(12),
+                            borderRadius:BorderRadius.circular(12),
                           ),
                         ),
                       ),
@@ -340,8 +294,7 @@ class AuthPageState extends State<AuthPage> {
                         decoration: InputDecoration(
                           labelText: "Nomor HP",
                           border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.circular(12),
+                            borderRadius:BorderRadius.circular(12),
                           ),
                         ),
                       ),
@@ -352,8 +305,7 @@ class AuthPageState extends State<AuthPage> {
                       decoration: InputDecoration(
                         labelText: "Email",
                         border: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(12),
+                          borderRadius:BorderRadius.circular(12),
                         ),
                       ),
                     ),
@@ -362,21 +314,18 @@ class AuthPageState extends State<AuthPage> {
                       controller: password,
                       obscureText: !showPassword,
                       onChanged: (value) {
-                        setState(() {
-                          isPasswordValid =value.length >= 8;
-                        });
+                        setState(() {isPasswordValid =value.length >= 8;});
                       },
                       decoration: InputDecoration(
                         labelText: "Password",
                         border: OutlineInputBorder(
-                          borderRadius:
-                              BorderRadius.circular(12),
+                          borderRadius:BorderRadius.circular(12),
                         ),
                         suffixIcon: IconButton(
                           icon: Icon(
                             showPassword
-                                ? Icons.visibility
-                                : Icons.visibility_off,
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                           ),
                           onPressed: () {
                             setState(() {
@@ -406,14 +355,11 @@ class AuthPageState extends State<AuthPage> {
                     if (!isLogin)
                       TextField(
                         controller: confirmPassword,
-                        obscureText:
-                            !showConfirmPassword,
+                        obscureText:!showConfirmPassword,
                         decoration: InputDecoration(
-                          labelText:
-                              "Konfirmasi Password",
+                          labelText:"Konfirmasi Password",
                           border: OutlineInputBorder(
-                            borderRadius:
-                                BorderRadius.circular(12),
+                            borderRadius:BorderRadius.circular(12),
                           ),
                           suffixIcon: IconButton(
                             icon: Icon(
@@ -422,10 +368,7 @@ class AuthPageState extends State<AuthPage> {
                                   : Icons.visibility_off,
                             ),
                             onPressed: () {
-                              setState(() {
-                                showConfirmPassword =
-                                    !showConfirmPassword;
-                              });
+                              setState(() {showConfirmPassword =!showConfirmPassword;});
                             },
                           ),
                         ),
@@ -437,12 +380,10 @@ class AuthPageState extends State<AuthPage> {
                       child: ElevatedButton(
                         style:
                             ElevatedButton.styleFrom(
-                          backgroundColor:
-                              Color(0xFF9E182B),
+                          backgroundColor:Color(0xFF9E182B),
                           shape:
-                              RoundedRectangleBorder(
-                            borderRadius:
-                                BorderRadius.circular(30),
+                          RoundedRectangleBorder(
+                            borderRadius:BorderRadius.circular(30),
                           ),
                         ),
                         onPressed: isLoading
@@ -491,11 +432,8 @@ class AuthPageState extends State<AuthPage> {
     bool selected = role == value;
     return GestureDetector(
       onTap: () {
-        setState(() {
-          role = value;
-        });
+        setState(() {role = value;});
       },
-
       child: AnimatedContainer(
         duration: Duration(milliseconds: 200),
         padding: EdgeInsets.symmetric(

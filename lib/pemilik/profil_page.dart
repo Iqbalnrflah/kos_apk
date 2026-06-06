@@ -10,36 +10,28 @@ class ProfilPage extends StatefulWidget {
   @override
   _ProfilPageState createState() => _ProfilPageState();
 }
-
 class _ProfilPageState extends State<ProfilPage> {
   File? _image;
   String? imageBase64;
   String? imageUrl;
   bool isLoading = false;
-
   final picker = ImagePicker();
   final namaController = TextEditingController();
   final telpController = TextEditingController();
-
   User? user = FirebaseAuth.instance.currentUser;
-
   @override
   void initState() {
     super.initState();
     loadProfile();
   }
-
-  // 🔥 LOAD DATA
   Future<void> loadProfile() async {
     try {
       var doc = await FirebaseFirestore.instance
           .collection('users')
           .doc(user!.uid)
           .get();
-
       if (doc.exists) {
         var data = doc.data();
-
         setState(() {
           namaController.text = data?['nama'] ?? '';
           telpController.text = data?['telp'] ?? '';
@@ -51,18 +43,14 @@ class _ProfilPageState extends State<ProfilPage> {
     }
   }
 
-  // 📸 PILIH GAMBAR + COMPRESS
   Future<void> pickImage() async {
     final pickedFile = await picker.pickImage(
       source: ImageSource.gallery,
       imageQuality: 40,
     );
-
     if (pickedFile != null) {
       File imageFile = File(pickedFile.path);
-
       String base64 = base64Encode(imageFile.readAsBytesSync());
-
       setState(() {
         _image = imageFile;
         imageBase64 = base64;
@@ -70,18 +58,13 @@ class _ProfilPageState extends State<ProfilPage> {
     }
   }
 
-  // 💾 SIMPAN TANPA STORAGE
   Future<void> saveProfile() async {
     setState(() => isLoading = true);
-
     try {
       String? photoData = imageBase64;
-
-      // kalau tidak pilih gambar baru → pakai lama
       if (photoData == null || photoData.isEmpty) {
         photoData = imageUrl;
       }
-
       await FirebaseFirestore.instance
           .collection('users')
           .doc(user!.uid)
@@ -91,27 +74,22 @@ class _ProfilPageState extends State<ProfilPage> {
         'email': user!.email,
         'photo': photoData ?? '',
       }, SetOptions(merge: true));
-
       setState(() {
         imageUrl = photoData;
         _image = null;
       });
-
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Profil berhasil disimpan")),
       );
-
     } catch (e) {
       print("ERROR: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text("Gagal simpan")),
       );
     }
-
     setState(() => isLoading = false);
   }
 
-  // 🖼️ TAMPILKAN FOTO
   Widget buildProfileImage() {
     if (_image != null) {
       return CircleAvatar(
@@ -153,14 +131,11 @@ class _ProfilPageState extends State<ProfilPage> {
         child: Column(
           children: [
             SizedBox(height: 30),
-
             GestureDetector(
               onTap: pickImage,
               child: buildProfileImage(),
             ),
-
             SizedBox(height: 20),
-
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
@@ -172,9 +147,7 @@ class _ProfilPageState extends State<ProfilPage> {
                       border: OutlineInputBorder(),
                     ),
                   ),
-
                   SizedBox(height: 15),
-
                   TextField(
                     controller: telpController,
                     keyboardType: TextInputType.phone,
@@ -183,9 +156,7 @@ class _ProfilPageState extends State<ProfilPage> {
                       border: OutlineInputBorder(),
                     ),
                   ),
-
                   SizedBox(height: 15),
-
                   TextField(
                     readOnly: true,
                     decoration: InputDecoration(
@@ -194,14 +165,12 @@ class _ProfilPageState extends State<ProfilPage> {
                       hintText: user?.email ?? "-",
                     ),
                   ),
-
                   SizedBox(height: 25),
-
                   ElevatedButton(
                     onPressed: isLoading ? null : saveProfile,
                     child: isLoading
-                        ? CircularProgressIndicator(color: Colors.white)
-                        : Text("Simpan"),
+                      ? CircularProgressIndicator(color: Colors.white)
+                      : Text("Simpan"),
                   )
                 ],
               ),

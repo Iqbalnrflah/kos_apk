@@ -4,13 +4,10 @@ import 'pembayaran_page.dart';
 import 'notifikasi_page.dart';
 import 'riwayat_page.dart';
 import 'tambah_kamar_page.dart';
-import 'profil_page.dart';
-
 class MainPage extends StatefulWidget {
   @override
   State<MainPage> createState() => _MainPageState();
 }
-
 class _MainPageState extends State<MainPage> {
   int index = 0;
   final pages = [
@@ -29,38 +26,29 @@ class _MainPageState extends State<MainPage> {
   String label,
   int i,
 ) {
-
   bool active = index == i;
-
   return GestureDetector(
     onTap: () => changeTab(i),
-
     child: Container(
       width: 55,
       padding: EdgeInsets.symmetric(vertical: 8),
-
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-
           Icon(
             icon,
             size: 28,
             color:
-                active
-                    ? Colors.white
-                    : Colors.white70,
+              active
+                ? Colors.white
+                : Colors.white70,
           ),
-
           SizedBox(height: 6),
-
           AnimatedContainer(
             duration: Duration(milliseconds: 250),
             curve: Curves.easeInOut,
-
             width: active ? 22 : 0,
             height: 3,
-
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(10),
@@ -76,7 +64,6 @@ class _MainPageState extends State<MainPage> {
 Widget build(BuildContext context) {
   return Scaffold(
     body: pages[index],
-
     floatingActionButton: FloatingActionButton(
       onPressed: () {
         Navigator.push(
@@ -95,9 +82,7 @@ Widget build(BuildContext context) {
       ),
     ),
 
-    floatingActionButtonLocation:
-        FloatingActionButtonLocation.centerDocked,
-
+    floatingActionButtonLocation:FloatingActionButtonLocation.centerDocked,
     bottomNavigationBar: Container(
       height: 101,
       decoration: BoxDecoration(
@@ -107,17 +92,13 @@ Widget build(BuildContext context) {
           topRight: Radius.circular(15),
         ),
       ),
-
       child: BottomAppBar(
         color: Colors.transparent,
         elevation: 0,
         shape: CircularNotchedRectangle(),
         notchMargin: 8,
-
         child: Row(
-          mainAxisAlignment:
-              MainAxisAlignment.spaceAround,
-
+          mainAxisAlignment:MainAxisAlignment.spaceAround,
           children: [
             navItem(Icons.home, "Home", 0),
             navItem(Icons.receipt_long, "Tagihan", 1),

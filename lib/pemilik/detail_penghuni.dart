@@ -22,7 +22,6 @@ class DetailPenghuniPage extends StatelessWidget {
     required this.kamarId,
   });
 
-  /// 🔥 FUNCTION KOSONGKAN KAMAR
   Future<void> kosongkanKamar(BuildContext context) async {
     await FirebaseFirestore.instance
         .collection('kost')

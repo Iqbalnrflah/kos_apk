@@ -100,7 +100,7 @@ class PembayaranPage extends StatelessWidget {
                             style: TextStyle(
                               color: statusBayar == "lunas"
                                 ? Colors.green
-                                  : const Color(0xFF9E182B),
+                                : const Color(0xFF9E182B),
                               fontWeight:FontWeight.bold,
                             ),
                           ),

@@ -44,6 +44,7 @@ class _TambahKamarPageState extends State<TambahKamarPage> {
       for (int i = 1; i <= totalKamar; i++) {
         await kosRef.collection('kamar').add({
           'No_Kamar': "Kamar $i",
+          'nomor_kamar': i,
           'status': "kosong",
         });
       }
@@ -140,7 +141,11 @@ class _TambahKamarPageState extends State<TambahKamarPage> {
                   ),
                   child: Text(
                     "Selesai",
-                    style: TextStyle(fontSize: 16),
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      ),
                   ),
                 ),
               ),
