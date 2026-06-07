@@ -7,21 +7,17 @@ class DetailPenghuniPage extends StatelessWidget {
 
   String formatTanggal(dynamic timestamp) {
   if (timestamp == null) return "-";
-
   try {
     DateTime date = (timestamp as Timestamp).toDate();
-
     return "${date.day}/${date.month}/${date.year}";
   } catch (e) {
     return "-";
   }
 }
-
   DetailPenghuniPage({
     required this.kosId,
     required this.kamarId,
   });
-
   Future<void> kosongkanKamar(BuildContext context) async {
     await FirebaseFirestore.instance
         .collection('kost')
@@ -34,11 +30,9 @@ class DetailPenghuniPage extends StatelessWidget {
       'penghuni_phone': null,
       'tanggal_masuk': null,
     });
-
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("Kamar berhasil dikosongkan")),
     );
-
     Navigator.pop(context);
   }
 
@@ -47,7 +41,6 @@ class DetailPenghuniPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
       ),
-
       body: Column(
         children: [
           StreamBuilder<DocumentSnapshot>(
@@ -57,10 +50,8 @@ class DetailPenghuniPage extends StatelessWidget {
                 .snapshots(),
             builder: (context, snapshot) {
               if (!snapshot.hasData) return SizedBox();
-
               var data = snapshot.data!.data() as Map<String, dynamic>;
               String alamat = data['alamat'] ?? "-";
-
               return Container(
                 width: double.infinity,
                 padding: EdgeInsets.symmetric(vertical: 10),
@@ -74,7 +65,6 @@ class DetailPenghuniPage extends StatelessWidget {
             },
           ),
 
-          /// 🔥 CONTENT
           Expanded(
             child: Center(
               child: SingleChildScrollView(
@@ -88,18 +78,12 @@ class DetailPenghuniPage extends StatelessWidget {
                         .doc(kamarId)
                         .snapshots(),
                     builder: (context, snapshot) {
-
                       if (!snapshot.hasData) {
                         return Center(child: CircularProgressIndicator());
                       }
-
-                      var data =
-                          snapshot.data!.data() as Map<String, dynamic>;
-
+                      var data = snapshot.data!.data() as Map<String, dynamic>;
                       return Column(
                         children: [
-
-                          /// 🔥 BOX BESAR
                           Container(
                             constraints: BoxConstraints(
                               minHeight: 400,
@@ -113,16 +97,13 @@ class DetailPenghuniPage extends StatelessWidget {
                             ),
                             child: Column(
                               children: [
-
                                 buildItem("No Kamar", data['No_Kamar']),
                                 buildItem("Nama", data['penghuni_nama']),
                                 buildItem("No HP", data['penghuni_phone']),
                                 buildItem("Tanggal Masuk", formatTanggal(data['tanggal_masuk'])),
-
                               ],
                             ),
                           ),
-
                           SizedBox(height: 20),
                           ElevatedButton(
                             onPressed: () => kosongkanKamar(context),
@@ -133,7 +114,14 @@ class DetailPenghuniPage extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            child: Text("Kosongkan Kamar"),
+                            child: 
+                            Text("Kosongkan Kamar",
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                           ),
                         ],
                       );

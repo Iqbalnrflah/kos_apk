@@ -67,7 +67,7 @@ class KamarPage extends StatelessWidget {
                   .collection('kost')
                   .doc(kosId)
                   .collection('kamar')
-                  .orderBy('nomor_kamar')
+                  .orderBy('nomor_kamar', descending: false)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
@@ -76,6 +76,14 @@ class KamarPage extends StatelessWidget {
                   );
                 }
                 var kamarList = snapshot.data!.docs;
+                kamarList.sort((a, b) {
+                  final da = a.data() as Map<String, dynamic>;
+                  final db = b.data() as Map<String, dynamic>;
+                
+                  return (da['nomor_kamar'] as int)
+                      .compareTo(db['nomor_kamar'] as int);
+                });
+
                 return GridView.builder(
                   padding: const EdgeInsets.all(20),
                   gridDelegate:
@@ -87,11 +95,8 @@ class KamarPage extends StatelessWidget {
                   itemCount: kamarList.length,
                   itemBuilder: (context, index) {
                     var kamar = kamarList[index];
-                    var data =
-                        kamar.data()
-                            as Map<String, dynamic>;
-                    bool isTerisi =
-                        data['status'] == 'terisi';
+                    var data =kamar.data()as Map<String, dynamic>;
+                    bool isTerisi =data['status'] == 'terisi';
                     return GestureDetector(
                       onTap: isTerisi
                       ? null
@@ -136,11 +141,11 @@ class KamarPage extends StatelessWidget {
                         ),
                         child: Center(
                           child: Text(
-                            data['No_Kamar'] ?? kamar.id,
+                            "${data['nomor_kamar']}",
                             style: TextStyle(
                               color: isTerisi
                                   ? const Color(0xFF9E182B)
-                                  : Colors.grey,
+                                  : Colors.white,
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                             ),

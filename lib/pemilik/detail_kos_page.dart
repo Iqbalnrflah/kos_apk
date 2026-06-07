@@ -50,12 +50,20 @@ class DetailKosPage extends StatelessWidget {
                   .collection('kost')
                   .doc(kosId)
                   .collection('kamar')
+                  .orderBy('nomor_kamar', descending: false)
                   .snapshots(),
               builder: (context, snapshot) {
                 if (!snapshot.hasData) {
                   return Center(child: CircularProgressIndicator());
                 }
                 var kamar = snapshot.data!.docs;
+                kamar.sort((a, b) {
+                  final da = a.data() as Map<String, dynamic>;
+                  final db = b.data() as Map<String, dynamic>;
+                  return (da['nomor_kamar'] as int)
+                      .compareTo(db['nomor_kamar'] as int);
+                });
+
                 return GridView.builder(
                   padding: EdgeInsets.all(16),
                   itemCount: kamar.length,
