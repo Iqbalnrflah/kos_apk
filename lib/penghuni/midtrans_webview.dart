@@ -61,7 +61,9 @@ class _MidtransWebViewState extends State<MidtransWebView> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Pembayaran"),
+        title: const Text("Pembayaran",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
       body: WebViewWidget(
         controller: controller,

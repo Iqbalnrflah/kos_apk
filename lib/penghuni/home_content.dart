@@ -15,7 +15,7 @@ class _HomeContentState extends State<HomeContent> {
   Widget build(BuildContext context) {
     return Column(
         children: [
-          CustomHeader(title: "Beranda"),
+          CustomHeader(title: "Home"),
           Padding(
             padding: EdgeInsets.all(12),
             child: Container(

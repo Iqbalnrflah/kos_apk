@@ -33,6 +33,7 @@
         );
         return;
       }
+      setState(() {isLoading = true;});
       try {
         var kosRef = await FirebaseFirestore.instance.collection('kost').add({
           'pemilik': pemilik.text,
@@ -43,6 +44,7 @@
           'harga': hargaKos,
           'created_at': Timestamp.now(),
         });
+
         for (int i = 1; i <= totalKamar; i++) {
           await kosRef.collection('kamar').add({
             'No_Kamar': "Kamar $i",
@@ -50,10 +52,11 @@
             'status': "kosong",
           });
         }
+        if (!mounted) return;
         showDialog(
           context: context,
           barrierDismissible: false,
-          builder: (context) {
+          builder: (dialogContext) {
             return AlertDialog(
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(20),
@@ -68,7 +71,7 @@
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               actions: [
@@ -78,8 +81,8 @@
                       backgroundColor: const Color(0xFF9E182B),
                     ),
                     onPressed: () {
-                      Navigator.pop(context); // tutup dialog
-                      Navigator.pop(context); // kembali ke halaman sebelumnya
+                      Navigator.pop(dialogContext);
+                      Navigator.pop(context);
                     },
                     child: const Text(
                       "OK",
@@ -91,15 +94,19 @@
             );
           },
         );
-        Navigator.pop(context);
       } catch (e) {
-        setState(() => isLoading = false);
+        setState(() {
+          isLoading = false;
+        });
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Gagal tambah kos")),
+          SnackBar(
+            content: Text("Gagal tambah kos"),
+          ),
         );
       }
     }
-    Widget buildInput(TextEditingController controller, String hint,
+        Widget buildInput(TextEditingController controller, String hint,
         {TextInputType keyboard = TextInputType.text}) {
       return Padding(
         padding: const EdgeInsets.only(bottom: 12),
@@ -179,24 +186,24 @@
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                    ),
+                    ),  
                     child: isLoading
-                        ? SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          ) 
-                    :Text(
-                      "Selesai",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                      ? SizedBox(
+                          width: 22,
+                          height: 22,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 3,
+                          ),
+                        )
+                      : Text(
+                          "Selesai",
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                    ),
                   ),
                 ),
               ],

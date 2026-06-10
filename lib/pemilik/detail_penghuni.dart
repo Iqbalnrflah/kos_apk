@@ -26,9 +26,16 @@ class DetailPenghuniPage extends StatelessWidget {
         .doc(kamarId)
         .update({
       'status': 'kosong',
-      'penghuni_nama': null,
-      'penghuni_phone': null,
-      'tanggal_masuk': null,
+      'penghuni_nama': FieldValue.delete(),
+      'penghuni_phone': FieldValue.delete(),
+      'tanggal_masuk': FieldValue.delete(),
+      'status_bayar': FieldValue.delete(),
+      'penghuniId': FieldValue.delete(),
+      'ownerId': FieldValue.delete(),
+      'kosId': FieldValue.delete(),
+      'harga': FieldValue.delete(),
+      'tanggal_masuk': FieldValue.delete(),
+      'updated_at': FieldValue.delete(),
     });
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("Kamar berhasil dikosongkan")),
@@ -106,7 +113,58 @@ class DetailPenghuniPage extends StatelessWidget {
                           ),
                           SizedBox(height: 20),
                           ElevatedButton(
-                            onPressed: () => kosongkanKamar(context),
+                            onPressed: () async {bool? konfirmasi = await showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text("Konfirmasi", textAlign: TextAlign.center,),
+                                content: Text("Apakah Anda yakin ingin mengosongkan kamar ini?"),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {Navigator.pop(context, false);},
+                                      child: Text("Batal"),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {Navigator.pop(context, true);},
+                                      child: Text("Ya"),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              if (konfirmasi == true) {await kosongkanKamar(context);
+                                showDialog(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15),
+                                    ),
+                                    title: Icon(
+                                      Icons.check_circle,
+                                      color: Colors.green,
+                                      size: 60,
+                                    ),
+                                    content: Text(
+                                      "Kamar berhasil dikosongkan",
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    actions: [
+                                      Center(
+                                        child: TextButton(
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            Navigator.pop(context);
+                                          },
+                                          child: Text("OK"),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Color(0xFF9E182B),
                               minimumSize: Size(double.infinity, 45),
@@ -114,8 +172,8 @@ class DetailPenghuniPage extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
-                            child: 
-                            Text("Kosongkan Kamar",
+                            child: Text(
+                              "Kosongkan Kamar",
                               style: TextStyle(
                                 fontSize: 16,
                                 color: Colors.white,
