@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 class DetailPenghuniPage extends StatelessWidget {
   final String kosId;
   final String kamarId;
-
   String formatTanggal(dynamic timestamp) {
   if (timestamp == null) return "-";
   try {
@@ -34,7 +32,6 @@ class DetailPenghuniPage extends StatelessWidget {
       'ownerId': FieldValue.delete(),
       'kosId': FieldValue.delete(),
       'harga': FieldValue.delete(),
-      'tanggal_masuk': FieldValue.delete(),
       'updated_at': FieldValue.delete(),
     });
     ScaffoldMessenger.of(context).showSnackBar(

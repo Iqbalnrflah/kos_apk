@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'home_content.dart';
 import 'tagihan_penghuni.dart';
 import 'daftar_penghuni.dart';
-import 'notif_penghuni.dart';
+import 'propil_penghuni.dart';
+import 'dart:ui'; 
+import 'chatbot.dart';
+import '../widgets/transisi.dart';
 
 class HomePenghuni extends StatefulWidget {
   @override
@@ -10,22 +13,62 @@ class HomePenghuni extends StatefulWidget {
 }
 
 class _HomePenghuniState extends State<HomePenghuni> {
+  bool showChatbot = false;
   int currentIndex = 0;
 
   final List<Widget> pages = [
     HomeContent(),
     TagihanPenghuniPage(),
     DaftarPenghuniPage(),
-    NotifPenghuniPage(),
+    EditProfilPenghuniPage(),
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: currentIndex,
-        children: pages,
+      body: Stack(
+        children: [
+          IndexedStack(
+            index: currentIndex,
+            children: pages,
+          ),
+          if (showChatbot)
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+            child: Container(
+              color: Colors.black.withOpacity(0.5),
+            ),
+          ),
+          if (showChatbot)
+            Positioned(
+              left: 20,
+              bottom: 80,
+              top: 120,
+              right: 20,
+              child: GenieTransition(
+                visible: showChatbot,
+                origin: Alignment.bottomRight,
+                child: ChatbotWidget(
+                  onClose: () {
+                    setState(() {
+                      showChatbot = false;
+                    });
+                  },
+                ),
+              ),
+            ),
+        ]
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            showChatbot = true;
+          });
+        },
+        backgroundColor: Color(0xFF9E182B),
+        child: Icon(Icons.chat,color: Colors.white),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
 
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,

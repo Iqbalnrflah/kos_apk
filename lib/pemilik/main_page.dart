@@ -1,114 +1,110 @@
 import 'package:flutter/material.dart';
 import 'home_page.dart';
-import 'pembayaran_page.dart';
-import 'notifikasi_page.dart';
+import 'tagihan_pemilik.dart';
 import 'riwayat_page.dart';
-import 'tambah_kamar_page.dart';
+import 'profil_page.dart';
+
 class MainPage extends StatefulWidget {
   @override
   State<MainPage> createState() => _MainPageState();
 }
+
 class _MainPageState extends State<MainPage> {
   int index = 0;
+
   final pages = [
     HomePage(),
-    PembayaranPage(),
-    notifPage(),
-    riwayatPage(),
+    TagihanPemilikPage(),
+    RiwayatPage(),
+    ProfilPage(),
   ];
+
   void changeTab(int i) {
     setState(() {
       index = i;
     });
   }
+
   Widget navItem(
-  IconData icon,
-  String label,
-  int i,
-) {
-  bool active = index == i;
-  return GestureDetector(
-    onTap: () => changeTab(i),
-    child: Container(
-      width: 55,
-      padding: EdgeInsets.symmetric(vertical: 8),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            icon,
-            size: 28,
-            color:
-              active
-                ? Colors.white
-                : Colors.white70,
-          ),
-          SizedBox(height: 6),
-          AnimatedContainer(
-            duration: Duration(milliseconds: 250),
-            curve: Curves.easeInOut,
-            width: active ? 22 : 0,
-            height: 3,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
-}
+    IconData icon,
+    String label,
+    int i,
+  ) {
+    bool active = index == i;
 
-@override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: pages[index],
-    floatingActionButton: FloatingActionButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => TambahKamarPage(),
-          ),
-        );
-      },
-      backgroundColor: Color(0xFF9E182B),
-      elevation: 6,
-      child: Icon(
-        Icons.add,
-        size: 30,
-        color: Colors.white,
-      ),
-    ),
-
-    floatingActionButtonLocation:FloatingActionButtonLocation.centerDocked,
-    bottomNavigationBar: Container(
-      height: 101,
-      decoration: BoxDecoration(
-        color: Color(0xFF9E182B),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(15),
-          topRight: Radius.circular(15),
+    return GestureDetector(
+      onTap: () => changeTab(i),
+      child: AnimatedContainer(
+        duration: Duration(milliseconds: 250),
+        curve: Curves.easeInOut,
+        padding: EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+        decoration: BoxDecoration(
+          // Pill pink lembut untuk tab aktif
+          color: active ? Color(0x40FFFFFF) : Colors.transparent,
+          borderRadius: BorderRadius.circular(14),
         ),
-      ),
-      child: BottomAppBar(
-        color: Colors.transparent,
-        elevation: 0,
-        shape: CircularNotchedRectangle(),
-        notchMargin: 8,
-        child: Row(
-          mainAxisAlignment:MainAxisAlignment.spaceAround,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            navItem(Icons.home, "Home", 0),
-            navItem(Icons.receipt_long, "Tagihan", 1),
-            SizedBox(width: 40),
-            navItem(Icons.notifications, "Notif", 2),
-            navItem(Icons.history, "Riwayat", 3),
+            Icon(
+              icon,
+              size: 22,
+              color: active ? Colors.white : Colors.white70,
+            ),
+            SizedBox(height: 2),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 10,
+                height: 1.1,
+                fontWeight: active ? FontWeight.w600 : FontWeight.w400,
+                color: active ? Colors.white : Colors.white70,
+              ),
+            ),
           ],
         ),
       ),
-    ),
-  );
-}
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: pages[index],
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Color(0xFF9E182B),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 8,
+              offset: Offset(0, -2),
+            ),
+          ],
+        ),
+        child: BottomAppBar(
+          color: Colors.transparent,
+          elevation: 0,
+          height: 62,
+          padding: EdgeInsets.zero,
+          shape: CircularNotchedRectangle(),
+          notchMargin: 8,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              navItem(Icons.home_outlined, "Beranda", 0),
+              navItem(Icons.receipt_long_outlined, "Tagihan", 1),
+              navItem(Icons.history, "Riwayat", 2),
+              navItem(Icons.person_outline, "Profil", 3),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }

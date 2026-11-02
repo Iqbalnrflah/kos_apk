@@ -15,6 +15,7 @@ class AuthPageState extends State<AuthPage> {
   bool isPasswordValid = true;
   bool showPassword = false;
   bool showConfirmPassword = false;
+  bool isCheckingSession = true;
   bool isPasswordComplex(String password) {
     return password.length >= 8 &&
         password.contains(RegExp(r'[A-Z]')) &&
@@ -29,8 +30,62 @@ class AuthPageState extends State<AuthPage> {
   final email = TextEditingController();
   final password = TextEditingController();
   final nama = TextEditingController();
+  final lokasi = TextEditingController();
   final phone = TextEditingController();
   final confirmPassword = TextEditingController();
+
+@override
+void initState() {
+  super.initState();
+  _cekSesi();
+}
+
+Future<void> _cekSesi() async {
+  final currentUser = FirebaseAuth.instance.currentUser;
+
+  // Belum pernah login atau sudah logout: tampilkan form login.
+  if (currentUser == null) {
+    if (mounted) setState(() => isCheckingSession = false);
+    return;
+  }
+
+  try {
+    final data = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(currentUser.uid)
+        .get();
+
+    // Akun ada di Auth tapi datanya tidak ada di Firestore.
+    if (!data.exists) {
+      await FirebaseAuth.instance.signOut();
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (_) => AuthPage()),
+        (route) => false,
+      );
+      if (mounted) setState(() => isCheckingSession = false);
+      return;
+    }
+
+    final userData = data.data() as Map<String, dynamic>;
+    final String userRole = userData['role'] ?? 'penghuni';
+
+    if (!mounted) return;
+
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            userRole == 'pemilik' ? MainPage() : HomePenghuni(),
+      ),
+      (route) => false,
+    );
+  } catch (e) {
+    // Misalnya tidak ada internet: tampilkan form login biasa.
+    if (mounted) setState(() => isCheckingSession = false);
+  }
+}
+
 
   Future<void> login() async {
     if (lockUntil != null && DateTime.now().isBefore(lockUntil!)) {
@@ -172,6 +227,14 @@ class AuthPageState extends State<AuthPage> {
   }
   @override
   Widget build(BuildContext context) {
+    if (isCheckingSession){
+      return Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(
+          child: CircularProgressIndicator(color: Color(0xFF9E182B),),
+        ),
+      );
+    }
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(

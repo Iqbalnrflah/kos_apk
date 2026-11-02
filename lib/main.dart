@@ -4,6 +4,8 @@ import 'firebase_options.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'pemilik/register_page.dart';
 import 'penghuni/daftar_penghuni.dart';
+import 'penghuni/home_content.dart';
+import 'package:kospay_dart/widgets/splash.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,9 +23,9 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Domine',
       ),
       debugShowCheckedModeBanner: false,
-      home: AuthPage(),
+      home: SplashPage(),
       routes: {
-        '/daftar_penghuni': (context) => DaftarPenghuniPage(),
+        '/home_content': (context) => HomeContent(),
       },
     );
   }

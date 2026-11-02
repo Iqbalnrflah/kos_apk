@@ -60,10 +60,10 @@ class _IsiKamarState extends State<IsiKamar> {
         .set({
       'penghuni_nama': nama.text,
       'penghuni_phone': phone.text,
+      'status': 'terisi',
       'penghuniId': user!.uid,
       'ownerId': ownerId,
       'kosId': widget.kosId,
-      'status': 'terisi',
       'No_Kamar': noKamar,
       'harga': harga,
       'tanggal_masuk': FieldValue.serverTimestamp(),

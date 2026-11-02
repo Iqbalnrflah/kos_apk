@@ -34,6 +34,7 @@ class DaftarPenghuniPage extends StatelessWidget {
                     final item = docs[index].data() as Map<String, dynamic>;
                     final nama = (item['penghuni_nama'] ?? "-").toString();
                     final phone = (item['penghuni_phone'] ?? "-").toString();
+                    final lokasi = (item['lokasi'] ?? "-").toString();
                     final status = (item['status'] ?? "belum lunas").toString();
                     final raw = item['tanggal_bayar'];
                     final tgl = raw is Timestamp
